@@ -26,14 +26,14 @@
 #if os(OSX)
     import AppKit
     
-    typealias PDFImage = NSImage
+    public typealias PDFImage = NSImage
 #elseif os(iOS)
     import UIKit
     
-    typealias PDFImage = UIImage
+    public typealias PDFImage = UIImage
 #endif
 
-enum ImageContentMode {
+public enum ImageContentMode {
     case scaleToFill
     case scaleAspectFit
     case scaleAspectFill
@@ -48,7 +48,7 @@ enum ImageContentMode {
     case bottomRight
 }
 
-class ImageRegion: PDFRegion {
+public class ImageRegion: PDFRegion {
     
     public var contentMode: ImageContentMode = .center
     public var image: PDFImage?
@@ -61,7 +61,7 @@ class ImageRegion: PDFRegion {
         #endif
     }
     
-    override func draw(withContext context: CGContext, inRect rect: CGRect) {
+    override public func draw(withContext context: CGContext, inRect rect: CGRect) {
         guard bounds.width > 0, bounds.height > 0 else {
             return
         }

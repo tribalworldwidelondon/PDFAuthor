@@ -40,7 +40,7 @@ public class StringRegion: PDFRegion {
 #if os(OSX)
     public var drawingOptions: NSString.DrawingOptions = []
 #else
-    public var drawingOptions: DrawingOptions = []
+    public var drawingOptions: NSStringDrawingOptions = []
 #endif
     
     public var preferredMaxLayoutWidth: CGFloat?

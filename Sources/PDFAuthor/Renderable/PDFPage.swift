@@ -69,7 +69,7 @@ public class PDFPage: PDFRegion {
             let ctx = NSGraphicsContext(cgContext: context, flipped: false)
             NSGraphicsContext.current = ctx
         #elseif os(iOS)
-            UIGraphicsPushContext(pdfContext)
+            UIGraphicsPushContext(context)
         #endif
         
         context.saveGState()

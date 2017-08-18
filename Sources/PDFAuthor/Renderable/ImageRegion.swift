@@ -55,7 +55,7 @@ class ImageRegion: PDFRegion {
     
     private var cgImage: CGImage? {
         #if os(iOS)
-            return image?.CGImage
+            return image?.cgImage
         #elseif os(OSX)
             return image?.cgImage(forProposedRect: nil, context: nil, hints: nil)
         #endif

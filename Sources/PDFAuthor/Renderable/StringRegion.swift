@@ -36,7 +36,13 @@ import CoreText
 
 public class StringRegion: PDFRegion {
     public var attributedString: NSAttributedString?
+    
+#if os(OSX)
     public var drawingOptions: NSString.DrawingOptions = []
+#else
+    public var drawingOptions: DrawingOptions = []
+#endif
+    
     public var preferredMaxLayoutWidth: CGFloat?
     
     internal override var suggestedVariableValues: [(variable: Variable, strength: Double, value: Double)] {

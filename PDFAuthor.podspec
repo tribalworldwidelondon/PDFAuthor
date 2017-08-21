@@ -19,6 +19,6 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/tribalworldwidelondon/PDFAuthor.git" }
   s.source_files  = "Sources/PDFAuthor/**/*.{swift}"
   
-  s.dependency "Cassowary", "~> 0.1.1"
+  s.dependency "Cassowary", "~> 0.1.2"
 
 end

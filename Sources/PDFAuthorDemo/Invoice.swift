@@ -122,6 +122,7 @@ class PhoneBillChapter: TableChapter, TableChapterDataSource {
     
     func tableChapter(_ tableChapter: TableChapter, headerRegionForPage page: Int) -> PDFRegion? {
         let mainStack = StackRegion()
+        mainStack.outlineTitle = "Bill Page \(page)"
         mainStack.axis = .vertical
         mainStack.alignment = .fill
         mainStack.distribution = .fill
@@ -185,7 +186,9 @@ class PhoneBillChapter: TableChapter, TableChapterDataSource {
         
         switch indexPath.column {
         case 0:
-            return StringRegion(string: call.number)
+            let region = StringRegion(string: call.number)
+            region.outlineTitle = call.number
+            return region
         case 1:
             return StringRegion(string: call.dateString)
         case 2:

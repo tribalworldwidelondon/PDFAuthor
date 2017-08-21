@@ -32,7 +32,7 @@ var pageSpecifications = PDFPageSpecifications(size: .A4)
 pageSpecifications.contentInsets = PDFEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
 let a4Chapter = PDFChapter(pageSpecifications: pageSpecifications)
 
-let document = PDFDocument().with {
+let document = PDFAuthorDocument().with {
     //$0.addChapter(a4Chapter)
     $0.addChapter(PhoneBillChapter(pageSpecifications: pageSpecifications))
 }

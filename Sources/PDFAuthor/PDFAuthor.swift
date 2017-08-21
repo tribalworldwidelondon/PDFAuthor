@@ -27,6 +27,8 @@ import CoreGraphics
 
 #if os(OSX)
     import Quartz
+#elsif os(iOS)
+    import PDFKit
 #endif
 
 public class PDFAuthorDocument {

@@ -42,6 +42,7 @@ public class StackRegion: PDFRegion {
     /// The arranged regions of the stack region.
     public var arrangedRegions: [PDFRegion]             = []
 
+    /// :nodoc:
     public override var constraints: [Constraint] {
         get {
             return super.constraints + constraintsForArrangedRegions()
@@ -55,10 +56,12 @@ public class StackRegion: PDFRegion {
 
     // MARK: Initializers
     
+    /// Default initializer
     public override init() {
         super.init(frame: .zero)
     }
     
+    /// Initialize with a set of arranged regions
     public init(arrangedRegions: [PDFRegion]) {
         super.init(frame: .zero)
         addArrangedRegions(arrangedRegions)

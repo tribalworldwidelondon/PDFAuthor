@@ -74,6 +74,8 @@ open class PDFRegion {
     }
     
     internal var _constraints: [Constraint] = []
+    
+    /// The Cassowary constraints on this region.
     public var constraints: [Constraint] {
         get {
             var c: [Constraint] = []
@@ -117,7 +119,10 @@ open class PDFRegion {
         }
     }
     
+    /// The autoresizing mask of the region.
     public var autoresizingMask: PDFAutoresizing = []
+    
+    /// Disabling this will prevent any autoreszingmask constraints from being generated for the region.
     public var translatesAutoresizingMaskIntoConstraints: Bool = true
     
     // MARK: Constraints
@@ -142,18 +147,22 @@ open class PDFRegion {
         return Variable("height", owner: self)
     }()
     
+    /// A constraint variable representing the left edge inset of the region.
     internal lazy var edgeInsetLeft: Variable = {
         return Variable("edgeInsetLeft", owner: self)
     }()
     
+    /// A constraint variable representing the right edge inset of the region.
     internal lazy var edgeInsetRight: Variable = {
         return Variable("edgeInsetRight", owner: self)
     }()
     
+    /// A constraint variable representing the top edge inset of the region.
     internal lazy var edgeInsetTop: Variable = {
         return Variable("edgeInsetTop", owner: self)
     }()
     
+    /// A constraint variable representing the bottom edge inset of the region.
     internal lazy var edgeInsetBottom: Variable = {
         return Variable("edgeInsetBottom", owner: self)
     }()
@@ -464,6 +473,7 @@ open class PDFRegion {
         return nil
     }
     
+    /// A returns the intrinsicContentSize of the region. Override this to provide your own value.
     public func intrinsicContentSize() -> CGSize? {
         return nil
     }
@@ -478,6 +488,7 @@ open class PDFRegion {
 
 // MARK: - Equatable
 extension PDFRegion: Equatable {
+    /// :nodoc:
     public static func ==(lhs: PDFRegion, rhs: PDFRegion) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
@@ -485,6 +496,7 @@ extension PDFRegion: Equatable {
 
 // MARK: - Hashable
 extension PDFRegion: Hashable {
+    /// :nodoc:
     public var hashValue: Int {
         // Return a hash 'unique' to this object
         return ObjectIdentifier(self).hashValue
@@ -493,6 +505,7 @@ extension PDFRegion: Hashable {
 
 // MARK: - CustomStringConvertible
 extension PDFRegion: CustomStringConvertible {
+    /// :nodoc:
     public var description: String {
         return "<\(type(of: self)), frame: \(frame))>"
     }

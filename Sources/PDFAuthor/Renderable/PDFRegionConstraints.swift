@@ -28,7 +28,7 @@ import Cassowary
 // MARK: - Constraints
 extension PDFRegion {
     
-    // MARK: Calculated constraint expressions
+    // MARK: Constraint Anchors
     
     /// An anchor specifying the right edge of the region.
     public var right: Expression {
@@ -52,13 +52,13 @@ extension PDFRegion {
     
     /// An anchor specifying the leading edge of the region.
     public var leading: Expression {
-        // TODO: Figure out how to support right to left languages
+        // TODO- Figure out how to support right to left languages
         return Expression(term: Term(variable: left)).setAlias("leading", owner: self)
     }
     
     /// An anchor specifying the trailing edge of the region.
     public var trailing: Expression {
-        // TODO: Figure out how to support right to left languages
+        // TODO- Figure out how to support right to left languages
         return (left + width).setAlias("trailing", owner: self)
     }
     

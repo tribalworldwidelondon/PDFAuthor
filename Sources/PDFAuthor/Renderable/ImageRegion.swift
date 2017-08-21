@@ -33,24 +33,53 @@
     public typealias PDFImage = UIImage
 #endif
 
+
+/// The content mode of the image.
 public enum ImageContentMode {
+    /// Scale the image to fill the frame, ignoring the aspect ratio
     case scaleToFill
+    
+    /// Scale the image to fit the frame, taking the aspect ratio into account
     case scaleAspectFit
+    
+    /// Scale the image to fill the frame, taking the aspect ratio into account
     case scaleAspectFill
+    
+    /// Center the image in the frame
     case center
+    
+    /// Align the image with the top of the frame
     case top
+    
+    /// Align the image with the bottom of the frame
     case bottom
+    
+    /// Align the image with the left of the frame
     case left
+    
+    /// Align the image with the right of the frame
     case right
+    
+    /// Align the image with the top-left corner of the frame
     case topLeft
+    
+    /// Align the image with the top-right corner of the frame
     case topRight
+    
+    /// Align the image with the bottom-left corner of the frame
     case bottomLeft
+    
+    /// Align the image with the bottom-right corner of the frame
     case bottomRight
 }
 
+/// A PDF Region that holds an image
 public class ImageRegion: PDFRegion {
     
+    /// The content mode of the image. This affects how the image is positioned and scaled within the frame.
     public var contentMode: ImageContentMode = .center
+    
+    /// The image to display in the frame
     public var image: PDFImage?
     
     private var cgImage: CGImage? {
@@ -61,6 +90,7 @@ public class ImageRegion: PDFRegion {
         #endif
     }
     
+    /// :nodoc:
     override public func draw(withContext context: CGContext, inRect rect: CGRect) {
         guard bounds.width > 0, bounds.height > 0 else {
             return

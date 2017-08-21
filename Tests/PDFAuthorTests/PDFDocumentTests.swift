@@ -31,7 +31,7 @@ import CoreGraphics
 class PDFDocumentTests: XCTestCase {
     
     func testPDFBasicDocumentGeneration() throws {
-        let document = PDFDocument()
+        let document = PDFAuthorDocument()
         let pageSpecifications = PDFPageSpecifications(size: .A4)
         
         let a4Chapter = PDFChapter(pageSpecifications: pageSpecifications)
@@ -55,14 +55,14 @@ class PDFDocumentTests: XCTestCase {
     }
     
     func testGeneratingDocumentWithInvalidURLThrowsError() {
-        let document = PDFDocument()
+        let document = PDFAuthorDocument()
         let invalidURL = URL(fileURLWithPath: "")
         
         XCTAssertThrowsError(try document.generate(to: invalidURL))
     }
     
     func testWith() {
-        let document = PDFDocument()
+        let document = PDFAuthorDocument()
         
         document.with {
             XCTAssertEqual(document, $0)
@@ -70,7 +70,7 @@ class PDFDocumentTests: XCTestCase {
     }
     
     func testGenerateDocumentOutline() {
-        let document = PDFDocument()
+        let document = PDFAuthorDocument()
         let pageSpecifications = PDFPageSpecifications(size: .A4)
         
         let chapter1 = PDFChapter(pageSpecifications: pageSpecifications)

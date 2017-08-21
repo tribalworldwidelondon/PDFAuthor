@@ -60,4 +60,4 @@ for color in colors {
     }
 }
 
-try document.generate(to: URL(fileURLWithPath: "/Users/andybest/Desktop/test1.pdf"))
+try document.generate(to: URL(fileURLWithPath: ("~/Desktop/test1.pdf" as NSString).expandingTildeInPath))

@@ -135,11 +135,11 @@ public class StackRegion: PDFRegion {
                             axisConstraints.append(region.bottom == self.bottomInset)
                         }
                     } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                         axisConstraints.append(region.bottom == self.bottomInset)
                     } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                     }
 
@@ -150,12 +150,12 @@ public class StackRegion: PDFRegion {
                             axisConstraints.append(region.bottom == self.bottomInset)
                         }
                     } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                         axisConstraints.append(region.bottom == self.bottomInset)
                         axisConstraints.append(region.height == arrangedRegions[index - 1].height)
                     } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                         axisConstraints.append(region.height == arrangedRegions[index - 1].height)
                     }
@@ -167,12 +167,12 @@ public class StackRegion: PDFRegion {
                             axisConstraints.append(region.bottom == self.bottomInset)
                         }
                     } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                         axisConstraints.append(region.bottom == self.bottomInset)
-                        axisConstraints.append(region.height == self.height * Double(heightProportions[index]))
+                        axisConstraints.append(region.height == self.height * heightProportions[index])
                     } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                     }
 
@@ -184,11 +184,11 @@ public class StackRegion: PDFRegion {
                             axisConstraints.append(region.bottom == self.bottomInset)
                         }
                     } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                         axisConstraints.append(region.bottom == self.bottomInset)
                     } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                     }
 
@@ -200,11 +200,11 @@ public class StackRegion: PDFRegion {
                             axisConstraints.append(region.bottom == self.bottomInset)
                         }
                     } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                         axisConstraints.append(region.bottom == self.bottomInset)
                     } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + Double(spacing)
+                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
                         axisConstraints.append(constraint)
                     }
                 }
@@ -262,30 +262,30 @@ public class StackRegion: PDFRegion {
                                 axisConstraints.append(region.right == self.rightInset)
                             }
                         } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                             axisConstraints.append(region.right == self.rightInset)
                         } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                         }
 
                     case .fillEqually:
                         if index == 0 {
                             axisConstraints.append(region.left == self.leftInset)
-                            axisConstraints.append(region.width == self.width / Double(arrangedRegions.count))
+                            axisConstraints.append(region.width == self.width / arrangedRegions.count)
                             if(arrangedRegions.count == 1) {
                                 axisConstraints.append(region.right == self.rightInset)
                             }
                         } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                             axisConstraints.append(region.right == self.rightInset)
-                            axisConstraints.append(region.width == self.width / Double(arrangedRegions.count))
+                            axisConstraints.append(region.width == self.width / arrangedRegions.count)
                         } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
-                            axisConstraints.append(region.width == self.width / Double(arrangedRegions.count))
+                            axisConstraints.append(region.width == self.width / arrangedRegions.count)
                         }
 
                     case .fillProportionally:
@@ -295,12 +295,12 @@ public class StackRegion: PDFRegion {
                                 axisConstraints.append(region.right == self.rightInset)
                             }
                         } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.right == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.right == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                             axisConstraints.append(region.right == self.rightInset)
-                            axisConstraints.append(region.width == self.width * Double(widthProportions[index]))
+                            axisConstraints.append(region.width == self.width * widthProportions[index])
                         } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                         }
 
@@ -312,11 +312,11 @@ public class StackRegion: PDFRegion {
                                 axisConstraints.append(region.right == self.rightInset)
                             }
                         } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                             axisConstraints.append(region.right == self.rightInset)
                         } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                         }
 
@@ -328,11 +328,11 @@ public class StackRegion: PDFRegion {
                                 axisConstraints.append(region.right == self.rightInset)
                             }
                         } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                             axisConstraints.append(region.right == self.rightInset)
                         } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + Double(spacing)
+                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
                             axisConstraints.append(constraint)
                         }
                 }

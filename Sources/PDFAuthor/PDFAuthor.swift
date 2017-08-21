@@ -27,7 +27,7 @@ import CoreGraphics
 
 #if os(OSX)
     import Quartz
-#elsif os(iOS)
+#elseif os(iOS)
     import PDFKit
 #endif
 

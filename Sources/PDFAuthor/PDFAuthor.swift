@@ -31,17 +31,17 @@ import CoreGraphics
     import PDFKit
 #endif
 
+/// A class representing a PDF document holding a number of chapters
 public class PDFAuthorDocument {
     
-    private var _chapters: [PDFChapter] = []
-    public var chapters: [PDFChapter] {
-        return _chapters
-    }
+    private(set) var chapters: [PDFChapter] = []
     
+    /// Initialize a new document
     public init() {
         
     }
     
+    /// Generate the PDF document and save it to the given URL
     public func generate(to url: URL) throws {
         guard let pdfContext = CGContext(url as CFURL, mediaBox: nil, nil) else {
             throw PDFError.cannotCreateDocument
@@ -81,7 +81,7 @@ public class PDFAuthorDocument {
     
     @available(iOS 11, *)
     @available(OSX 10.4, *)
-    public final func recursiveOutlineObject(outlineDict: [String: Any], document: PDFDocument) -> PDFOutline? {
+    private final func recursiveOutlineObject(outlineDict: [String: Any], document: PDFDocument) -> PDFOutline? {
         let o = PDFOutline()
         
         if let title = outlineDict["Title"] as? String,
@@ -109,7 +109,7 @@ public class PDFAuthorDocument {
         return o
     }
     
-    public func generateDocumentOutline() -> [String: Any] {
+    internal func generateDocumentOutline() -> [String: Any] {
         var pageNum = 1
         var outlines: [[String: Any]] = []
         
@@ -128,10 +128,12 @@ public class PDFAuthorDocument {
     
     // MARK: Chapter Management
     
+    /// Add a chapter to the document
     public func addChapter(_ chapter: PDFChapter) {
-        _chapters.append(chapter)
+        chapters.append(chapter)
     }
     
+    /// Calls the given closure with the document as an argument
     @discardableResult
     public func with(_ withFunc: (inout PDFAuthorDocument) -> Void) -> PDFAuthorDocument {
         var this = self
@@ -142,6 +144,7 @@ public class PDFAuthorDocument {
 
 // MARK: - Equatable
 extension PDFAuthorDocument: Equatable {
+    /// :nodoc:
     public static func ==(lhs: PDFAuthorDocument, rhs: PDFAuthorDocument) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
@@ -149,6 +152,7 @@ extension PDFAuthorDocument: Equatable {
 
 // MARK: - Hashable
 extension PDFAuthorDocument: Hashable {
+    /// :nodoc:
     public var hashValue: Int {
         // Return a hash 'unique' to this object
         return ObjectIdentifier(self).hashValue

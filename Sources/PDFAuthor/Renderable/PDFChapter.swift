@@ -24,11 +24,16 @@
 
 import Foundation
 
+/// A class representing a chapter with a number of pages
 open class PDFChapter {
-    var pageSpecifications: PDFPageSpecifications
-    var outlineTitle: String?
+    internal var pageSpecifications: PDFPageSpecifications
+    
+    /// The title that this chapter will have in the PDF outline. Setting to nil means that it won't appear in the outline.
+    public var outlineTitle: String?
+    
     internal var pages: [PDFPage]
     
+    /// Initialize the chapter with the given page specifications. All pages in the chapter will use these specifications
     public init(pageSpecifications: PDFPageSpecifications) {
         self.pageSpecifications = pageSpecifications
         pages = []
@@ -36,16 +41,19 @@ open class PDFChapter {
     
     // MARK: Page Management
     
+    /// Add a page to the chapter
     public func addPage(_ page: PDFPage) {
         pages.append(page)
     }
     
+    /// Adds a new page to the chapter
     public func addNewPage() -> PDFPage {
         let page = PDFPage(specifications: pageSpecifications)
         addPage(page)
         return page
     }
     
+    /// Calls the given closure with a new page as the argument
     @discardableResult
     public func withNewPage(pageFunc: (PDFPage)->(Void)) -> PDFPage {
         let page = addNewPage()
@@ -54,7 +62,6 @@ open class PDFChapter {
     }
     
     // MARK: Rendering
-    
     internal func outline(withStartingPage pageNum: Int) -> (numPages: Int, outline: [[String: Any]]) {
         var outlines: [[String: Any]] = []
         var currentPage = pageNum

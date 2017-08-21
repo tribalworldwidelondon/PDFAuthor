@@ -42,13 +42,13 @@ open class TableChapter: PDFChapter {
     
     // MARK: Current page variables
     
-    private var currentY: Double = 0
+    private var currentY: CGFloat = 0
     private var currentPageNum: Int {
         return pages.count - 1
     }
     
-    private var remainingSpace: Double {
-        return Double(currentPage.specifications.size.height) - currentY
+    private var remainingSpace: CGFloat {
+        return currentPage.specifications.size.height - currentY
     }
     
     private var currentPage: PDFPage {
@@ -92,7 +92,7 @@ open class TableChapter: PDFChapter {
         
         for (offset: idx, element: row) in sectionRows.enumerated() {
             // If there is not enough space left for the row, start a new page
-            if remainingSpace < row.height.value {
+            if remainingSpace < CGFloat(row.height.value) {
                 newTablePage()
                 
                 let remainingRows = Array(sectionRows.dropFirst(idx))
@@ -102,9 +102,9 @@ open class TableChapter: PDFChapter {
                 return
             }
             
-            row.addConstraints(row.left == currentPage.leftInset + Double(sectionInsets.left), row.top == currentY)
+            row.addConstraints(row.left == currentPage.leftInset + sectionInsets.left, row.top == currentY)
             currentPage.addChild(row)
-            currentY += row.height.value
+            currentY += CGFloat(row.height.value)
         }
         
     }
@@ -116,26 +116,26 @@ open class TableChapter: PDFChapter {
         let sectionWidth = widthForSection(section)
         
         
-        header.addConstraints(header.left == currentPage.leftInset + Double(sectionInsets.left),
-                              header.top == currentY + Double(sectionInsets.top),
-                              header.width == Double(sectionWidth))
+        header.addConstraints(header.left == currentPage.leftInset + sectionInsets.left,
+                              header.top == currentY + sectionInsets.top,
+                              header.width == sectionWidth)
         
         header.updateConstraints()
         
-        let headerHeight = header.height.value
+        let headerHeight = CGFloat(header.height.value)
         
         if headerHeight > remainingSpace {
             newTablePage()
         }
         
-        currentY += headerHeight + Double(sectionInsets.top)
+        currentY += headerHeight + sectionInsets.top
     }
     
     @discardableResult
     internal func newTablePage() -> PDFPage {
         
         return withNewPage {
-            self.currentY = Double(currentPage.edgeInsets.top)
+            self.currentY = currentPage.edgeInsets.top
             
             guard let ds = self.dataSource else {
                 return
@@ -149,23 +149,23 @@ open class TableChapter: PDFChapter {
                 $0.addChild(pageHeader)
                 pageHeader.addConstraints(pageHeader.left == currentPage.leftInset,
                                       pageHeader.top == currentPage.topInset,
-                                      pageHeader.width == Double(headerWidth))
+                                      pageHeader.width == headerWidth)
                 
                 pageHeader.calculateConstraints()
                 pageHeader.recursivelyUpdateFrames(transform: .zero)
                 
-                currentY += pageHeader.height.value
+                currentY += CGFloat(pageHeader.height.value)
             }
         }
     }
     
-    internal func widthForSection(_ section: Int) -> Double {
+    internal func widthForSection(_ section: Int) -> CGFloat {
         let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
-        return Double(currentPage.specifications.size.width
+        return currentPage.specifications.size.width
             - currentPage.edgeInsets.left
             - currentPage.edgeInsets.right
             - sectionInsets.left
-            - sectionInsets.right)
+            - sectionInsets.right
     }
     
     internal func getSectionInfo() -> [(numRows: Int, numCols: Int, columnWeights: [Double], columnSpacing: Double)] {
@@ -267,9 +267,9 @@ open class TableChapter: PDFChapter {
         return rows
     }
     
-    internal func height(forRows rows: [PDFRegion]) -> Double {
+    internal func height(forRows rows: [PDFRegion]) -> CGFloat {
         return rows.reduce(0.0) {
-            return $0 + Double($1.frame.size.height)
+            return $0 + $1.frame.size.height
         }
     }
 }

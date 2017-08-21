@@ -32,9 +32,7 @@ class PDFDocumentTests: XCTestCase {
     
     func testPDFBasicDocumentGeneration() throws {
         let document = PDFDocument()
-        let pageSpecifications = PDFPageSpecifications(backgroundInsets: .zero,
-                                                       contentInsets: .zero,
-                                                       size: .A4)
+        let pageSpecifications = PDFPageSpecifications(size: .A4)
         
         let a4Chapter = PDFChapter(pageSpecifications: pageSpecifications)
         document.addChapter(a4Chapter)
@@ -73,9 +71,7 @@ class PDFDocumentTests: XCTestCase {
     
     func testGenerateDocumentOutline() {
         let document = PDFDocument()
-        let pageSpecifications = PDFPageSpecifications(backgroundInsets: .zero,
-                                                       contentInsets: .zero,
-                                                       size: .A4)
+        let pageSpecifications = PDFPageSpecifications(size: .A4)
         
         let chapter1 = PDFChapter(pageSpecifications: pageSpecifications)
         chapter1.outlineTitle = "Chapter 1"

@@ -228,7 +228,8 @@ open class TableChapter: PDFChapter {
             let col = columns[i]
             
             // Add width constraint
-            col.addConstraints((col.width == (row.width - row.edgeInsetLeft - row.edgeInsetRight - (spacing * Double(columns.count - 1))) * weights[i]).setStrength(Strength.STRONG))
+            let space = (spacing * Double(columns.count - 1))
+            col.addConstraints((col.width == (row.width - row.edgeInsetLeft - row.edgeInsetRight - space) * weights[i]).setStrength(Strength.STRONG))
             
             if i < 1 {
                 continue

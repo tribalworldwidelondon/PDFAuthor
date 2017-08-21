@@ -67,7 +67,9 @@ open class PDFRegion {
             (variable: edgeInsetTop, strength: Strength.STRONG, value: Double(edgeInsets.top)),
             (variable: edgeInsetBottom, strength: Strength.STRONG, value: Double(edgeInsets.bottom)),
             (variable: edgeInsetLeft, strength: Strength.STRONG, value: Double(edgeInsets.left)),
-            (variable: edgeInsetRight, strength: Strength.STRONG, value: Double(edgeInsets.right))
+            (variable: edgeInsetRight, strength: Strength.STRONG, value: Double(edgeInsets.right)),
+            (variable: width, strength: Strength.WEAK, value: Double(bounds.width)),
+            (variable: height, strength: Strength.WEAK, value: Double(bounds.height))
         ]
     }
     

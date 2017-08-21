@@ -49,7 +49,7 @@ class PDFRegionConstraintsTests: XCTestCase {
                                 centered.centerY == root.centerY)
         
         root.calculateConstraints()
-        root.recursivelyUpdateFrames()
+        root.recursivelyUpdateFrames(transform: .zero)
         
         assertIsCloseTo(root.frame, CGRect(x: 0, y: 0, width: 1000, height: 1000))
         assertIsCloseTo(centered.frame, CGRect(x: 250, y: 250, width: 500, height: 500))

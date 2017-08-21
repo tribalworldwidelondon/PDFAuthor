@@ -207,6 +207,7 @@ public struct PDFPageSpecifications {
 
 // MARK: - PDFAutoresizing
 
+/// An OptionSet representing the autoresizingmask of a PDF region
 public struct PDFAutoresizing: OptionSet {
     public let rawValue: Int
     

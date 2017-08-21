@@ -34,15 +34,20 @@ import CoreText
     public typealias PDFFont = UIFont
 #endif
 
+/// A PDF region that renders and NSAttributedString
 public class StringRegion: PDFRegion {
     /// The attributed string that this region will draw
     public var attributedString: NSAttributedString?
     
+    
 #if os(OSX)
-    public var drawingOptions: NSString.DrawingOptions = []
+    public typealias PDFAuthorStringDrawingOptions = NSString.DrawingOptions
 #else
-    public var drawingOptions: NSStringDrawingOptions = []
+    public typealias PDFAuthorStringDrawingOptions = NSStringDrawingOptions
 #endif
+    
+    /// The drawing options of the string
+    public var drawingOptions: PDFAuthorStringDrawingOptions = []
     
     /// The preferred maximum width for the String Region
     public var preferredMaxLayoutWidth: CGFloat?

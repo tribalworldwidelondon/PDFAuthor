@@ -25,9 +25,15 @@
 import Foundation
 import Cassowary
 
+/// A structure representing an index into a table
 public struct PDFIndexPath {
+    /// The table section
     public var section: Int
+    
+    /// The row in the given section
     public var row: Int
+    
+    /// The column in the given row, in the given section
     public var column: Int
 }
 
@@ -35,6 +41,7 @@ protocol TableChapterDelegate {
     
 }
 
+/// A PDF chapter that generates a table
 open class TableChapter: PDFChapter {
     
     /// The datasource object for the Table Chapter

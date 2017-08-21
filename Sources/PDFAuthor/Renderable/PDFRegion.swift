@@ -56,11 +56,13 @@ open class PDFRegion {
     
     // MARK: Constraints variables
     
+    /*
     public var contentCompressionResistanceVertical: PDFLayoutPriority?
     public var contentCompressionResistanceHorizontal: PDFLayoutPriority?
     
     public var contentHuggingPriorityVertical: PDFLayoutPriority?
     public var contentHuggingPriorityHorizontal: PDFLayoutPriority?
+     */
     
     internal var suggestedVariableValues: [(variable: Variable, strength: Double, value: Double)] {
         return [
@@ -476,13 +478,6 @@ open class PDFRegion {
     /// A returns the intrinsicContentSize of the region. Override this to provide your own value.
     public func intrinsicContentSize() -> CGSize? {
         return nil
-    }
-    
-    @discardableResult
-    public func with(_ mutatingFunc: (inout PDFRegion) -> Void) -> PDFRegion {
-        var this = self
-        mutatingFunc(&this)
-        return self
     }
 }
 

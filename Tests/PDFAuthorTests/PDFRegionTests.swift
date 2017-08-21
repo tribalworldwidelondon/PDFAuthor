@@ -342,14 +342,6 @@ class PDFRegionTests: XCTestCase {
         XCTAssert(outline! == expectedOutline)
     }
     
-    func testWith() {
-        let region = PDFRegion(frame: .zero)
-        
-        region.with {
-            XCTAssertEqual(region, $0)
-        }
-    }
-    
     
     /*static var allTests = [
         //("testExample", testExample),

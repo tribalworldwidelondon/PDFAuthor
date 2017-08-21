@@ -24,6 +24,7 @@
 
 import Foundation
 
+/// An enumeration with possible errors when building a PDF document
 public enum PDFError: Error {
     /// An error returned if the PDF document cannot be created
     case cannotCreateDocument

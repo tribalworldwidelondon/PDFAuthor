@@ -31,14 +31,15 @@ import Cassowary
     import UIKit
 #endif
 
+/// A class representing a page in a PDF document.
 public class PDFPage: PDFRegion {
     
     internal var specifications: PDFPageSpecifications
     internal var backgroundInsets: PDFEdgeInsets
     
-    
     // MARK: Initialization
     
+    /// Initialize the page with the given specifications.
     init(specifications: PDFPageSpecifications) {
         self.specifications = specifications
         self.backgroundInsets = specifications.backgroundInsets
@@ -51,7 +52,7 @@ public class PDFPage: PDFRegion {
     
     // MARK: Drawing
     
-    func render(toContext context: CGContext) {
+    internal func render(toContext context: CGContext) {
         // This is the root, so we need to constrain the edges
         self.addConstraints(self.left == Double(frame.origin.x),
                             self.top == Double(frame.origin.y),

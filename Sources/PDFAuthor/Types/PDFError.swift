@@ -25,5 +25,6 @@
 import Foundation
 
 public enum PDFError: Error {
+    /// An error returned if the PDF document cannot be created
     case cannotCreateDocument
 }

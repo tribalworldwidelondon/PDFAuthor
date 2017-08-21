@@ -51,7 +51,11 @@ public class StringRegion: PDFRegion {
         }
         
         let size = self.intrinsicContentSize() ?? .zero
-        return super.suggestedVariableValues + [(width, Strength.WEAK, Double(size.width)), (height, Strength.STRONG, Double(size.height))]
+        
+        // Override parent's width + height suggested values
+        let suggested = super.suggestedVariableValues.filter { $0.variable != width && $0.variable != height }
+        
+        return suggested + [(width, Strength.WEAK, Double(size.width)), (height, Strength.STRONG, Double(size.height))]
     }
     
     // MARK: Initializers

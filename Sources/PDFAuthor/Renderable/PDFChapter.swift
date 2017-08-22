@@ -102,7 +102,7 @@ open class PDFChapter {
     /**
      Override this function if the chapter needs to dynamically generate pages
      */
-    public func generate() {
+    open func generate() {
         
     }
 }

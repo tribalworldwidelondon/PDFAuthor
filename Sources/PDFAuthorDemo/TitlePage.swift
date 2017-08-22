@@ -26,21 +26,25 @@ import Foundation
 import PDFAuthor
 import Cassowary
 
-import AppKit
-
-let start = Date()
-
-var pageSpecifications = PDFPageSpecifications(size: .A4)
-pageSpecifications.contentInsets = PDFEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
-pageSpecifications.backgroundInsets = PDFEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-
-let document = PDFAuthorDocument().with {
-    $0.addChapter(TitleChapter(pageSpecifications: pageSpecifications))
-    $0.addChapter(MaskChapter(pageSpecifications: pageSpecifications))
-    $0.addChapter(PhoneBillChapter(pageSpecifications: pageSpecifications))
+class TitleChapter: PDFChapter {
+    override init(pageSpecifications: PDFPageSpecifications) {
+        super.init(pageSpecifications: pageSpecifications)
+    }
+    
+    override func generate() {
+        withNewPage {
+            $0.backgroundColor = PDFColor(white: 0.95, alpha: 1.0)
+            
+            let titleRegion = StringRegion(string: "PDF Author Demo Document",
+                                           font: PDFFont.boldSystemFont(ofSize: 24),
+                                           color: PDFColor(white: 0.1, alpha: 1.0))
+            $0.addChild(titleRegion)
+            
+            titleRegion.addConstraints(
+                titleRegion.left == $0.leftInset,
+                titleRegion.right == $0.rightInset,
+                titleRegion.centerY == $0.centerY
+            )
+        }
+    }
 }
-
-try document.generate(to: URL(fileURLWithPath: ("~/Desktop/test1.pdf" as NSString).expandingTildeInPath))
-
-let elapsed = Date().timeIntervalSince(start)
-print("Demo document produced in \(elapsed) seconds.")

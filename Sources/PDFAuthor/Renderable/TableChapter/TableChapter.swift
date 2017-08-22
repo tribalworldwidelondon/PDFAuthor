@@ -68,7 +68,7 @@ open class TableChapter: PDFChapter {
     
     // MARK: Dynamic Generation
     
-    public override func generate() {
+    open override func generate() {
         guard dataSource != nil else {
             return
         }

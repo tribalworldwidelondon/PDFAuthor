@@ -44,18 +44,24 @@ class MaskChapter: PDFChapter {
     }
     
     func buildChapter() {
-        let headerRegion = StringRegion(string: "Masking",
-                                        font: .boldSystemFont(ofSize: 16),
+        let headerRegion = StringRegion(string: "Region Masking",
+                                        font: .boldSystemFont(ofSize: 22),
                                         color: textColor)
+        
+        let introRegion = StringRegion(string: "Some examples of different mask types supported by PDFAuthor",
+                                       font: .systemFont(ofSize: 12),
+                                       color: textColor)
         
         withNewPage {
             $0.backgroundColor = pageBackgroundColor
-            $0.outlineTitle = "Masks"
+            $0.outlineTitle = "Region Masking"
             
             // Create a stack region to hold all of the page elements
             
             let pageStack = StackRegion(arrangedRegions: [
                 headerRegion,
+                spacerRegion(8),
+                introRegion,
                 spacerRegion(),
                 sectionTitleRegion("Rectangular mask"),
                 regionWithRectangularMask(),
@@ -65,6 +71,7 @@ class MaskChapter: PDFChapter {
                 spacerRegion(),
                 sectionTitleRegion("CGPath mask"),
                 regionWithPathMask(),
+                spacerRegion(),
                 sectionTitleRegion("Image mask"),
                 regionWithImageMask()
                 ])
@@ -83,9 +90,9 @@ class MaskChapter: PDFChapter {
         }
     }
     
-    func spacerRegion() -> PDFRegion {
+    func spacerRegion(_ space: CGFloat = 24) -> PDFRegion {
         let region = PDFRegion()
-        region.addConstraint(region.height == 16)
+        region.addConstraint(region.height == space)
         return region
     }
     
@@ -144,15 +151,17 @@ class MaskChapter: PDFChapter {
     }
     
     func maskImage() -> PDFImage {
+        // Create a simple image that can be used as a mask in the example.
+        
         let width = 128
         let height = 128
         
         var pixels = [UInt8](repeating: 0x0, count: width * height)
         
-        // Create a simple XOR image
+        // Produce an interesting texture
         for x in 0..<width {
             for y in 0..<height {
-                let val = x ^ y
+                let val = Int(((cos(CGFloat(x) * 0.1) + sin(CGFloat(y) * 0.1)) + 2.0) * 127)
                 pixels[x + (y * width)] = UInt8(val & 0xFF)
             }
         }

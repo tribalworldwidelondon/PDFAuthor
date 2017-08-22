@@ -33,15 +33,6 @@ protocol PDFOutlinable {
     var outlineTitle: String? { get set }
 }
 
-
-// MARK: PDFSizable
-
-protocol PDFSizable {
-    func sizeThatFits(size: CGSize) -> CGSize
-    func sizeThatFits(width: CGFloat) -> CGSize
-}
-
-
 // MARK: - PDFPageSize
 
 /// A structure representing the size of a PDF Page
@@ -211,9 +202,13 @@ public struct PDFPageSpecifications {
 public struct PDFAutoresizing: OptionSet {
     public let rawValue: Int
     
+    /// Resizing performed by expanding or shrinking a region's width.
     public static let flexibleWidth = PDFAutoresizing(rawValue: 1 << 0)
+    
+    /// Resizing performed by expanding or shrinking a region's height.
     public static let flexibleHeight = PDFAutoresizing(rawValue: 1 << 1)
     
+    /// Initialize with a raw value.
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
@@ -222,11 +217,18 @@ public struct PDFAutoresizing: OptionSet {
 
 // MARK: - PDFLayoutPriority
 
+/// Layout priority.
 public enum PDFLayoutPriority {
+    /// Required priority/
     case required
+    
+    /// High priority.
     case high
+    
+    /// Low priority.
     case low
     
+    /// Generates a Cassowary constraint strength from layout priority.
     public var constraintStrength: Double {
         switch self {
         case .required: return Strength.REQUIRED

@@ -68,7 +68,13 @@ open class PDFChapter {
         
         for page in pages {
             if let outline = page.recursiveOutline(origin: .zero, pageNum: currentPage) {
-                outlines.append(outline)
+                if outline["Title"] == nil {
+                    if let children = outline["Children"] as? [[String: Any]] {
+                        outlines.append(contentsOf: children)
+                    }
+                } else {
+                    outlines.append(outline)
+                }
             }
             currentPage += 1
         }
@@ -77,10 +83,10 @@ open class PDFChapter {
             let outline = [
                 "Destination": pageNum,
                 "DestinationRect": [
-                    "Width": 100,
-                    "Height": 100,
-                    "X": 0,
-                    "Y": 0
+                    "Width": CGFloat(100.0),
+                    "Height": CGFloat(100.0),
+                    "X": CGFloat(0.0),
+                    "Y": CGFloat(0.0)
                 ],
                 "Title": title as Any,
                 "Children": outlines

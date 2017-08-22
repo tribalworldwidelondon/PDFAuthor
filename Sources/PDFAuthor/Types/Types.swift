@@ -237,3 +237,22 @@ public enum PDFLayoutPriority {
         }
     }
 }
+
+
+/// The type of mask used by a PDFRegion.
+public enum PDFMaskType {
+    /// A mask that clips to the bounds of the region.
+    case bounds
+    
+    /// A rectangle mask, with coordinates relative to the region's coordinate space.
+    case rect(CGRect)
+    
+    /// A mask made up of an array of rectangles, with coordinates relative to the region's coordinate space.
+    case rects([CGRect])
+    
+    /// A mask using an image, using coordinates specified by the rect, relative to the region's coordinate space.
+    case image(PDFImage, CGRect)
+    
+    /// A mask using a CGPath
+    case path(CGPath)
+}

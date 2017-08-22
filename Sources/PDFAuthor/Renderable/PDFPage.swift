@@ -93,4 +93,28 @@ public class PDFPage: PDFRegion {
         
         context.endPDFPage()
     }
+    
+    /**
+     Internal function that handles drawing the background
+     - parameters:
+     - context: The CGContext to draw into
+     - rect: A rect providing bounds in which to draw
+     */
+    override internal func drawInternal(withContext context: CGContext, inRect rect: CGRect) {
+        // Draw background color
+        if !rect.isEmpty {
+            // Inset the rect by the background insets
+            let bgRect = CGRect(x: rect.origin.x + backgroundInsets.left,
+                                y: rect.origin.y + backgroundInsets.top,
+                                width: rect.width - backgroundInsets.left - backgroundInsets.right,
+                                height: rect.height - backgroundInsets.top - backgroundInsets.bottom)
+            
+            context.saveGState()
+            context.setFillColor(backgroundColor.cgColor)
+            context.fill(bgRect)
+            context.restoreGState()
+        }
+        
+        draw(withContext: context, inRect: rect)
+    }
 }

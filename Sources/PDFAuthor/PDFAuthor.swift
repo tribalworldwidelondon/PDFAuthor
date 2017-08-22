@@ -86,14 +86,16 @@ public class PDFAuthorDocument {
         
         if let title = outlineDict["Title"] as? String,
             let destination = outlineDict["Destination"] as? Int,
-            let destinationRect = outlineDict["DestinationRect"] as? [String: CGFloat],
-            let dX = destinationRect["X"], let dY = destinationRect["Y"] {
+            let destinationRect = outlineDict["DestinationRect"] as? [String: Any],
+            let dX = destinationRect["X"] as? CGFloat, let dY = destinationRect["Y"] as? CGFloat {
             o.label = title
             let page = document.page(at: destination - 1)!
             let bounds = page.bounds(for: PDFDisplayBox.mediaBox)
             // Coordinate system is reversed
             o.destination = PDFDestination(page: page, at: CGPoint(x: dX, y: bounds.height - dY))
             
+        } else {
+            print("nope")
         }
         
         if let children = outlineDict["Children"] as? [[String: Any]] {

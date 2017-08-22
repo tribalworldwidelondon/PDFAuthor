@@ -54,6 +54,9 @@ open class PDFRegion {
     /// The title for this element in the PDF outline. If nil, it will not appear in the outline.
     public var outlineTitle: String?
     
+    /// If set, determines the mask for this region and all of its subregions
+    public var maskType: PDFMaskType?
+    
     // MARK: Constraints variables
     
     /*
@@ -235,6 +238,9 @@ open class PDFRegion {
      */
     public final func drawRecursive(withContext context: CGContext, inRect rect: CGRect, drawnRegions: inout Set<PDFRegion>) {
         drawnRegions.insert(self)
+        
+        context.saveGState()
+        applyMask(toContext: context)
         drawInternal(withContext: context, inRect: rect)
         
         for child in _children {
@@ -251,6 +257,7 @@ open class PDFRegion {
                 context.restoreGState()
             }
         }
+        context.restoreGState()
     }
     
     /**
@@ -268,7 +275,7 @@ open class PDFRegion {
          - context: The CGContext to draw into
          - rect: A rect providing bounds in which to draw
      */
-    private func drawInternal(withContext context: CGContext, inRect rect: CGRect) {
+    internal func drawInternal(withContext context: CGContext, inRect rect: CGRect) {
         // Draw background color
         if !rect.isEmpty {
             context.saveGState()
@@ -278,6 +285,37 @@ open class PDFRegion {
         }
             
         draw(withContext: context, inRect: rect)
+    }
+    
+    func applyMask(toContext context: CGContext) {
+        guard let mask = maskType else {
+            return
+        }
+        
+        switch mask {
+        case .bounds:
+            context.clip(to: self.bounds)
+        case .rect(let rect):
+            context.clip(to: rect)
+        case .rects(let rects):
+            context.clip(to: rects)
+        case .image(let image, let rect):
+            #if os(iOS)
+                let cgImage = image.cgImage
+            #elseif os(OSX)
+                let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+            #endif
+            
+            guard let i = cgImage else {
+                assertionFailure("Invalid CGImage!")
+                return
+            }
+            
+            context.clip(to: rect, mask: i)
+        case .path(let path):
+            context.addPath(path)
+            context.clip()
+        }
     }
     
     // MARK: Geometry
@@ -440,8 +478,10 @@ open class PDFRegion {
     public final func recursiveOutline(origin: CGPoint, pageNum: Int) -> [String: Any]? {
         var outlines: [[String: Any]] = []
         
+        var hasOutline = false
         if let o = outline(origin: origin, pageNum: pageNum) {
             outlines.append(o)
+            hasOutline = true
         }
         
         for child in children {
@@ -450,14 +490,23 @@ open class PDFRegion {
             newOrigin.y += self.frame.origin.y
             
             if let o = child.recursiveOutline(origin: newOrigin, pageNum: pageNum) {
-                outlines.append(o)
+                if o["Title"] == nil {
+                    if let children = o["Children"] as? [[String: Any]] {
+                        outlines.append(contentsOf: children)
+                    } else {
+                        outlines.append(o)
+                    }
+                } else {
+                    outlines.append(o)
+                }
             }
         }
         
         if outlines.count == 1 {
             return outlines[0]
-        } else if outlines.count > 1 {
+        } else if hasOutline {
             var parentOutline = outlines[0]
+            
             // Sort children by Y position
             parentOutline["Children"] = Array(outlines.dropFirst()).sorted {
                 let destRect1 = $0["DestinationRect"] as! [String: Any]
@@ -470,6 +519,8 @@ open class PDFRegion {
             }
             
             return parentOutline
+        } else if outlines.count > 0 {
+            return ["Children": outlines]
         }
         
         return nil

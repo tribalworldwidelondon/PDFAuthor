@@ -97,6 +97,7 @@ class PhoneBillChapter: TableChapter, TableChapterDataSource {
     
     override init(pageSpecifications: PDFPageSpecifications) {
         super.init(pageSpecifications: pageSpecifications)
+        self.outlineTitle = "Phone Bill Example"
         self.dataSource = self
     }
 
@@ -122,7 +123,6 @@ class PhoneBillChapter: TableChapter, TableChapterDataSource {
     
     func tableChapter(_ tableChapter: TableChapter, headerRegionForPage page: Int) -> PDFRegion? {
         let mainStack = StackRegion()
-        mainStack.outlineTitle = "Bill Page \(page)"
         mainStack.axis = .vertical
         mainStack.alignment = .fill
         mainStack.distribution = .fill

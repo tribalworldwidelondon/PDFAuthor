@@ -94,8 +94,6 @@ public class PDFAuthorDocument {
             // Coordinate system is reversed
             o.destination = PDFDestination(page: page, at: CGPoint(x: dX, y: bounds.height - dY))
             
-        } else {
-            print("nope")
         }
         
         if let children = outlineDict["Children"] as? [[String: Any]] {

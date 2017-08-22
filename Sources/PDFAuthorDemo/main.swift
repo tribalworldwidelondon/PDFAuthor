@@ -28,6 +28,8 @@ import Cassowary
 
 import AppKit
 
+let start = Date()
+
 var pageSpecifications = PDFPageSpecifications(size: .A4)
 pageSpecifications.contentInsets = PDFEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
 pageSpecifications.backgroundInsets = PDFEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
@@ -38,3 +40,6 @@ let document = PDFAuthorDocument().with {
 }
 
 try document.generate(to: URL(fileURLWithPath: ("~/Desktop/test1.pdf" as NSString).expandingTildeInPath))
+
+let elapsed = Date().timeIntervalSince(start)
+print("Demo document produced in \(elapsed) seconds.")

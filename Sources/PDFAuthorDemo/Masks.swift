@@ -64,7 +64,9 @@ class MaskChapter: PDFChapter {
                 regionWithMultipleRectangularMasks(),
                 spacerRegion(),
                 sectionTitleRegion("CGPath mask"),
-                regionWithPathMask()
+                regionWithPathMask(),
+                sectionTitleRegion("Image mask"),
+                regionWithImageMask()
                 ])
             
             pageStack.axis = .vertical
@@ -130,5 +132,59 @@ class MaskChapter: PDFChapter {
         region.maskType = .path(path)
         
         return region
+    }
+    
+    func regionWithImageMask() -> PDFRegion {
+        let region = StringRegion(string: loremIpsum)
+        region.backgroundColor = maskedRegionBackgroundColor
+        
+        region.maskType = .image(maskImage(), CGRect(x: 16, y: 16, width: 128, height: 128))
+        
+        return region
+    }
+    
+    func maskImage() -> PDFImage {
+        let width = 128
+        let height = 128
+        
+        var pixels = [UInt8](repeating: 0x0, count: width * height)
+        
+        // Create a simple XOR image
+        for x in 0..<width {
+            for y in 0..<height {
+                let val = x ^ y
+                pixels[x + (y * width)] = UInt8(val & 0xFF)
+            }
+        }
+        
+        let bitsPerComponent = 8
+        let bytesPerPixel = 1
+        let bitsPerPixel = bytesPerPixel * bitsPerComponent
+        let bytesPerRow = bytesPerPixel * width
+        let totalBytes = height * bytesPerRow
+        let providerRef = CGDataProvider(data: NSData(bytes: pixels, length: totalBytes))!
+        
+        let colorSpaceRef = CGColorSpaceCreateDeviceGray()
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue)
+        
+        let image = CGImage(width: width,
+                            height: height,
+                            bitsPerComponent: bitsPerComponent,
+                            bitsPerPixel: bitsPerPixel,
+                            bytesPerRow: bytesPerRow,
+                            space: colorSpaceRef,
+                            bitmapInfo: bitmapInfo,
+                            provider: providerRef,
+                            decode: nil,
+                            shouldInterpolate: false,
+                            intent: .defaultIntent)
+        
+        // Save the image as a png to save space
+        let data: NSData = NSMutableData()
+        let dest = CGImageDestinationCreateWithData(data as! CFMutableData, kUTTypePNG, 1, nil)!
+        CGImageDestinationAddImage(dest, image!, nil)
+        CGImageDestinationFinalize(dest)
+        
+        return PDFImage(data: data as Data)!
     }
 }

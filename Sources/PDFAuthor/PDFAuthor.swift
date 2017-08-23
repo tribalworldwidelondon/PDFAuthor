@@ -41,7 +41,13 @@ public class PDFAuthorDocument {
         
     }
     
-    /// Generate the PDF document and save it to the given URL
+    /**
+     Generate the PDF document and save it to the given URL.
+     - parameters:
+         - url: The URL at which to save the generated document
+         - progressCallback: A callback that takes a Double argument, which is the progress of the PDF
+                             generation represented by a value between 0 and 1.
+     */
     public func generate(to url: URL, progressCallback: ((Double) -> Void)? = nil) throws {
         guard let pdfContext = CGContext(url as CFURL, mediaBox: nil, nil) else {
             throw PDFError.cannotCreateDocument

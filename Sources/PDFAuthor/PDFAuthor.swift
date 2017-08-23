@@ -42,16 +42,38 @@ public class PDFAuthorDocument {
     }
     
     /// Generate the PDF document and save it to the given URL
-    public func generate(to url: URL) throws {
+    public func generate(to url: URL, progressCallback: ((Double) -> Void)? = nil) throws {
         guard let pdfContext = CGContext(url as CFURL, mediaBox: nil, nil) else {
             throw PDFError.cannotCreateDocument
         }
         
+        // Chapter generation is 0%-50% progress
+        let chapterProgressStep = 0.5 / Double(chapters.count)
+        
+        var progress = 0.0
+        
         for chapter in chapters {
             chapter.generate()
-            
+            progress += chapterProgressStep
+            if progressCallback != nil {
+                progressCallback!(progress)
+            }
+        }
+        
+        let numPages = chapters.reduce(0) {
+            $0 + $1.pages.count
+        }
+        
+        // Page rendering is 50%-100% of progress
+        let pageProgressStep = 0.5 / Double(numPages)
+        
+        for chapter in chapters {
             for page in chapter.pages {
                 page.render(toContext: pdfContext)
+                progress += pageProgressStep
+                if progressCallback != nil {
+                    progressCallback!(progress)
+                }
             }
         }
         

@@ -34,6 +34,12 @@
 #endif
 
 
+public enum PDFImageType {
+    case image(PDFImage)
+    case imageBlock(()-> PDFImage)
+}
+
+
 /// The content mode of the image.
 public enum ImageContentMode {
     /// Scale the image to fill the frame, ignoring the aspect ratio

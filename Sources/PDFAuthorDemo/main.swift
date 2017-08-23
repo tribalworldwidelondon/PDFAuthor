@@ -40,7 +40,9 @@ let document = PDFAuthorDocument().with {
     $0.addChapter(PhoneBillChapter(pageSpecifications: pageSpecifications))
 }
 
-try document.generate(to: URL(fileURLWithPath: ("~/Desktop/test1.pdf" as NSString).expandingTildeInPath))
+try document.generate(to: URL(fileURLWithPath: ("~/Desktop/test1.pdf" as NSString).expandingTildeInPath)) { progress in
+    print ("Progress : \(Int(progress * 100))%")
+}
 
 let elapsed = Date().timeIntervalSince(start)
 print("Demo document produced in \(elapsed) seconds.")

@@ -37,6 +37,27 @@
 public enum PDFImageType {
     case image(PDFImage)
     case imageBlock(()-> PDFImage)
+    case cgImage(CGImage)
+    
+    func getCGImage() -> CGImage? {
+        switch self {
+        case .image(let image):
+            #if os(iOS)
+                return image.cgImage
+            #elseif os(OSX)
+                return image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+            #endif
+        case .imageBlock(let f):
+            let image = f()
+            #if os(iOS)
+                return image.cgImage
+            #elseif os(OSX)
+                return image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+            #endif
+        case .cgImage(let image):
+            return image
+        }
+    }
 }
 
 
@@ -86,15 +107,7 @@ public class ImageRegion: PDFRegion {
     public var contentMode: ImageContentMode = .center
     
     /// The image to display in the frame
-    public var image: PDFImage?
-    
-    private var cgImage: CGImage? {
-        #if os(iOS)
-            return image?.cgImage
-        #elseif os(OSX)
-            return image?.cgImage(forProposedRect: nil, context: nil, hints: nil)
-        #endif
-    }
+    public var image: PDFImageType?
     
     /// :nodoc:
     override public func draw(withContext context: CGContext, inRect rect: CGRect) {
@@ -102,7 +115,7 @@ public class ImageRegion: PDFRegion {
             return
         }
         
-        guard let img = cgImage else {
+        guard let img = image?.getCGImage() else {
             return
         }
         

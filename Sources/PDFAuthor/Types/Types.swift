@@ -195,7 +195,6 @@ public struct PDFPageSpecifications {
     public typealias PDFColor = UIColor
 #endif
 
-
 // MARK: - PDFAutoresizing
 
 /// An OptionSet representing the autoresizingmask of a PDF region

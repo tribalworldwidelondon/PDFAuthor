@@ -117,4 +117,47 @@ public class PDFPage: PDFRegion {
         
         draw(withContext: context, inRect: rect)
     }
+    
+    // MARK: Constraints
+    
+    internal lazy var backgroundInsetLeft: Variable = {
+        return Variable("backgroundInsetLeft", owner: self)
+    }()
+    
+    internal lazy var backgroundInsetRight: Variable = {
+        return Variable("backgroundInsetRight", owner: self)
+    }()
+    
+    internal lazy var backgroundInsetTop: Variable = {
+        return Variable("backgroundInsetTop", owner: self)
+    }()
+    
+    internal lazy var backgroundInsetBottom: Variable = {
+        return Variable("backgroundInsetBottom", owner: self)
+    }()
+    
+    override internal var suggestedVariableValues: [(variable: Variable, strength: Double, value: Double)] {
+        return super.suggestedVariableValues + [
+            (variable: backgroundInsetTop, strength: Strength.STRONG, value: Double(backgroundInsets.top)),
+            (variable: backgroundInsetBottom, strength: Strength.STRONG, value: Double(backgroundInsets.bottom)),
+            (variable: backgroundInsetLeft, strength: Strength.STRONG, value: Double(backgroundInsets.left)),
+            (variable: backgroundInsetRight, strength: Strength.STRONG, value: Double(backgroundInsets.right))
+        ]
+    }
+    
+    public var leftBackgroundInset: Expression {
+        return (left + backgroundInsetLeft).setAlias("leftBackgroundInset", owner: self)
+    }
+    
+    public var rightBackgroundInset: Expression {
+        return (right - backgroundInsetRight).setAlias("rightBackgroundInset", owner: self)
+    }
+    
+    public var topBackgroundInset: Expression {
+        return (top + backgroundInsetTop).setAlias("topBackgroundInset", owner: self)
+    }
+    
+    public var bottomBackgroundInset: Expression {
+        return (bottom - backgroundInsetBottom).setAlias("bottomBackgroundInset", owner: self)
+    }
 }

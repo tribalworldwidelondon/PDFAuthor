@@ -36,7 +36,7 @@
 
 public enum PDFImageType {
     case image(PDFImage)
-    case imageBlock(()-> PDFImage)
+    case imageBlock(()-> PDFImage?)
     case cgImage(CGImage)
     
     func getCGImage() -> CGImage? {
@@ -50,9 +50,9 @@ public enum PDFImageType {
         case .imageBlock(let f):
             let image = f()
             #if os(iOS)
-                return image.cgImage
+                return image?.cgImage
             #elseif os(OSX)
-                return image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+                return image?.cgImage(forProposedRect: nil, context: nil, hints: nil)
             #endif
         case .cgImage(let image):
             return image

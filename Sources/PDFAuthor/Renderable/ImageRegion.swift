@@ -128,6 +128,11 @@ public class ImageRegion: PDFRegion {
         
         // TODO: Possibly move the clipping to a clipsToBounds property on PDFRegion?
         context.saveGState()
+        
+        // Transform coordinate system so that images are the right way up
+        context.translateBy(x: 0, y: imageSize.height)
+        context.scaleBy(x: 1.0, y: -1.0)
+        
         context.clip(to: bounds)
         context.draw(img, in: ImageRegion.frameForContentMode(self.contentMode,
                                                               bounds: self.bounds,

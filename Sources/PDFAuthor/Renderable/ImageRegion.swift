@@ -133,7 +133,7 @@ public class ImageRegion: PDFRegion {
         context.saveGState()
         
         // Transform coordinate system so that images are the right way up
-        context.translateBy(x: 0, y: imageSize.height)
+        context.translateBy(x: 0, y: bounds.height)
         context.scaleBy(x: 1.0, y: -1.0)
         
         if let blendMode = blendMode {

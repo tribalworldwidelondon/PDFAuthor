@@ -107,6 +107,7 @@ class MaskChapter: PDFChapter {
         let region = StringRegion(string: loremIpsum)
         region.backgroundColor = maskedRegionBackgroundColor
         region.maskType = .rect(CGRect(x: 16, y: 16, width: 96, height: 96))
+        region.maskType = .circular
         return region
     }
     

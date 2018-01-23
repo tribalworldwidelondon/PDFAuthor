@@ -254,4 +254,14 @@ public enum PDFMaskType {
     
     /// A mask using a CGPath
     case path(CGPath)
+    
+    /// A circular mask to the region's bounds
+    case circular
+    
+    /// An ellipse mask to the region's bounds
+    case ellipse
+    
+    /// A round rect mask to the region's bounds
+    case roundRect(cornerRadius: CGFloat)
+    
 }

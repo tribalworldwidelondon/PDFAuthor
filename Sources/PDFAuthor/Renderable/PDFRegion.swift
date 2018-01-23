@@ -303,6 +303,20 @@ open class PDFRegion {
             return [CGPath(rect: maskRect, transform: nil)]
         case .rects(let rects):
             return rects.map { CGPath(rect: $0, transform: nil) }
+        case .circular:
+            let diameter = min(self.bounds.width, self.bounds.height)
+            let rect = CGRect(x: (self.bounds.width / 2) - (diameter / 2),
+                              y: (self.bounds.height / 2) - (diameter / 2),
+                              width: diameter,
+                              height: diameter)
+            return [CGPath(ellipseIn: rect, transform: nil)]
+        case .ellipse:
+            return [CGPath(ellipseIn: self.bounds, transform: nil)]
+        case .roundRect(cornerRadius: let cornerRadius):
+            return [CGPath(roundedRect: self.bounds,
+                          cornerWidth: cornerRadius,
+                          cornerHeight: cornerRadius,
+                          transform: nil)]
         default:
             return [CGPath(rect: rect, transform: nil)]
         }
@@ -384,6 +398,24 @@ open class PDFRegion {
             
             context.clip(to: rect, mask: i)
         case .path(let path):
+            context.addPath(path)
+            context.clip()
+        case .circular:
+            let diameter = min(self.bounds.width, self.bounds.height)
+            let rect = CGRect(x: (self.bounds.width / 2) - (diameter / 2),
+                              y: (self.bounds.height / 2) - (diameter / 2),
+                              width: diameter,
+                              height: diameter)
+            context.addPath(CGPath(ellipseIn: rect, transform: nil))
+            context.clip()
+        case .ellipse:
+            context.addPath(CGPath(ellipseIn: self.bounds, transform: nil))
+            context.clip()
+        case .roundRect(cornerRadius: let cornerRadius):
+            let path = CGPath(roundedRect: self.bounds,
+                              cornerWidth: cornerRadius,
+                              cornerHeight: cornerRadius,
+                              transform: nil)
             context.addPath(path)
             context.clip()
         }

@@ -109,6 +109,9 @@ public class ImageRegion: PDFRegion {
     /// The image to display in the frame
     public var image: PDFImageType?
     
+    /// The blend mode to use when rendering the image
+    public var blendMode: CGBlendMode?
+    
     /// :nodoc:
     override public func draw(withContext context: CGContext, inRect rect: CGRect) {
         guard bounds.width > 0, bounds.height > 0 else {
@@ -132,6 +135,10 @@ public class ImageRegion: PDFRegion {
         // Transform coordinate system so that images are the right way up
         context.translateBy(x: 0, y: imageSize.height)
         context.scaleBy(x: 1.0, y: -1.0)
+        
+        if let blendMode = blendMode {
+            context.setBlendMode(blendMode)
+        }
         
         context.clip(to: bounds)
         context.draw(img, in: ImageRegion.frameForContentMode(self.contentMode,

@@ -43,6 +43,22 @@ open class PDFRegion {
     /// The background color of the region. Defaults to .clear
     public var backgroundColor: PDFColor = .clear
     
+    /// An enum representing the different border styles
+    public enum BorderStyle {
+        
+        /// No border
+        case none
+        
+        /// A solid border
+        case solid(width: CGFloat, color: PDFColor)
+        
+        /// A dashed border
+        case dashed(width: CGFloat, color: PDFColor, phase: CGFloat, lengths: [CGFloat])
+    }
+    
+    /// The border style of this region
+    public var borderStyle: BorderStyle = .none
+    
     private weak var _parent: PDFRegion?
     /// The parent region, or nil if it does not have one.
     public var parent: PDFRegion? { return _parent }
@@ -269,6 +285,23 @@ open class PDFRegion {
     public func draw(withContext context: CGContext, inRect rect: CGRect) {
     }
     
+    internal func borderPaths(inRect rect: CGRect) -> [CGPath] {
+        guard let maskType = self.maskType else {
+            return [CGPath(rect: rect, transform: nil)]
+        }
+        
+        switch maskType {
+        case .path(let path):
+            return [path]
+        case .rect(let maskRect):
+            return [CGPath(rect: maskRect, transform: nil)]
+        case .rects(let rects):
+            return rects.map { CGPath(rect: $0, transform: nil) }
+        default:
+            return [CGPath(rect: rect, transform: nil)]
+        }
+    }
+    
     /**
      Internal function that handles drawing the background
      - parameters:
@@ -281,7 +314,32 @@ open class PDFRegion {
             context.saveGState()
             context.setFillColor(backgroundColor.cgColor)
             context.fill(rect)
+           
+            switch borderStyle {
+            case .solid(width: let width, color: let color):
+                context.setLineWidth(width)
+                context.setStrokeColor(color.cgColor)
+                for path in self.borderPaths(inRect: rect) {
+                    context .addPath(path)
+                }
+                context.strokePath()
+                break
+                
+            case .dashed(width: let width, color: let color, phase: let phase, lengths: let lengths):
+                context.setLineWidth(width)
+                context.setStrokeColor(color.cgColor)
+                context.setLineDash(phase: phase, lengths: lengths)
+                for path in self.borderPaths(inRect: rect) {
+                    context .addPath(path)
+                }
+                context.strokePath()
+                break
+
+            default: break
+            }
+            
             context.restoreGState()
+            
         }
             
         draw(withContext: context, inRect: rect)

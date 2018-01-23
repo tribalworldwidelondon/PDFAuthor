@@ -120,6 +120,8 @@ class MaskChapter: PDFChapter {
             CGRect(x: 80, y: 16, width: 32, height: 32),
             CGRect(x: 80, y: 80, width: 32, height: 32)
             ])
+        
+        region.borderStyle = .solid(width: 2.0, color: .blue)
         return region
     }
     
@@ -137,6 +139,8 @@ class MaskChapter: PDFChapter {
                             transform: nil))
         
         region.maskType = .path(path)
+        
+        region.borderStyle = .solid(width: 2.0, color: .red)
         
         return region
     }

@@ -38,6 +38,7 @@ class TitleChapter: PDFChapter {
             let titleRegion = StringRegion(string: "PDF Author Demo Document",
                                            font: PDFFont.boldSystemFont(ofSize: 24),
                                            color: PDFColor(white: 0.1, alpha: 1.0))
+            
             $0.addChild(titleRegion)
             
             titleRegion.addConstraints(

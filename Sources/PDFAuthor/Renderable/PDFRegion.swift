@@ -73,6 +73,12 @@ open class PDFRegion {
     /// If set, determines the mask for this region and all of its subregions
     public var maskType: PDFMaskType?
     
+    /// The alpha of this region
+    public var alpha: CGFloat = 1.0
+    
+    /// Used to calculate alpha of child regions
+    internal var calculatedAlpha: CGFloat = 1.0
+    
     // MARK: Constraints variables
     
     /*
@@ -309,9 +315,12 @@ open class PDFRegion {
          - rect: A rect providing bounds in which to draw
      */
     internal func drawInternal(withContext context: CGContext, inRect rect: CGRect) {
+        calculatedAlpha = (parent?.calculatedAlpha ?? 1.0) * alpha
+        
         // Draw background color
         if !rect.isEmpty {
             context.saveGState()
+            context.setAlpha(calculatedAlpha)
             context.setFillColor(backgroundColor.cgColor)
             context.fill(rect)
            
@@ -341,8 +350,11 @@ open class PDFRegion {
             context.restoreGState()
             
         }
-            
+        
+        context.saveGState()
+        context.setAlpha(calculatedAlpha)
         draw(withContext: context, inRect: rect)
+        context.restoreGState()
     }
     
     func applyMask(toContext context: CGContext) {

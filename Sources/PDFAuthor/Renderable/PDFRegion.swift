@@ -323,30 +323,6 @@ open class PDFRegion {
             context.setAlpha(calculatedAlpha)
             context.setFillColor(backgroundColor.cgColor)
             context.fill(rect)
-           
-            switch borderStyle {
-            case .solid(width: let width, color: let color):
-                context.setLineWidth(width)
-                context.setStrokeColor(color.cgColor)
-                for path in self.borderPaths(inRect: rect) {
-                    context .addPath(path)
-                }
-                context.strokePath()
-                break
-                
-            case .dashed(width: let width, color: let color, phase: let phase, lengths: let lengths):
-                context.setLineWidth(width)
-                context.setStrokeColor(color.cgColor)
-                context.setLineDash(phase: phase, lengths: lengths)
-                for path in self.borderPaths(inRect: rect) {
-                    context .addPath(path)
-                }
-                context.strokePath()
-                break
-
-            default: break
-            }
-            
             context.restoreGState()
             
         }
@@ -354,6 +330,31 @@ open class PDFRegion {
         context.saveGState()
         context.setAlpha(calculatedAlpha)
         draw(withContext: context, inRect: rect)
+        
+        // Draw border after content, so it is overlaid
+        switch borderStyle {
+        case .solid(width: let width, color: let color):
+            context.setLineWidth(width)
+            context.setStrokeColor(color.cgColor)
+            for path in self.borderPaths(inRect: rect) {
+                context .addPath(path)
+            }
+            context.strokePath()
+            break
+            
+        case .dashed(width: let width, color: let color, phase: let phase, lengths: let lengths):
+            context.setLineWidth(width)
+            context.setStrokeColor(color.cgColor)
+            context.setLineDash(phase: phase, lengths: lengths)
+            for path in self.borderPaths(inRect: rect) {
+                context .addPath(path)
+            }
+            context.strokePath()
+            break
+            
+        default: break
+        }
+        
         context.restoreGState()
     }
     

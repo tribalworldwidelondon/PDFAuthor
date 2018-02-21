@@ -26,7 +26,7 @@ import Foundation
 import Cassowary
 
 /// A PDF region that arranges its subregions in a vertical or horizontal stack
-public class StackRegion: PDFRegion {
+public open class StackRegion: PDFRegion {
 
     /// The layout of arranged regions perpendicular to the stack region's axis
     public var alignment:       StackRegionAlignment    = .fill

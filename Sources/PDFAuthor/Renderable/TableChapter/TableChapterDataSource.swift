@@ -34,22 +34,22 @@ public protocol TableChapterDataSource: class {
     /**
      Asks the data source for a region to insert at a particular location in the table.
      */
-    func tableChapter(_ tableChapter: TableChapter, regionFor: PDFIndexPath) -> PDFRegion
+    func tableChapter(_ tableChapter: TableChapter, regionFor indexPath: PDFIndexPath) -> PDFRegion
     
     /// Asks the data source for the number of sections in the table.
     func numberOfSections(in: TableChapter) -> UInt
     
     /// Asks the data source for the number of rows in a particular section in the table.
-    func tableChapter(_ tableChapter: TableChapter, numberOfRowsInSection: Int) -> Int
+    func tableChapter(_ tableChapter: TableChapter, numberOfRowsInSection section: Int) -> Int
     
     /// Asks the data source for the number of columns in a particular section in the table.
-    func tableChapter(_ tableChapter: TableChapter, numberOfColumnsInSection: Int) -> Int
+    func tableChapter(_ tableChapter: TableChapter, numberOfColumnsInSection section: Int) -> Int
     
     
     // MARK: Row Formatting
     
     /// Asks the data source for the background color of a row in the table
-    func tableChapter(_ tableChapter: TableChapter, backgroundColorForRowAtIndexPath: PDFIndexPath) -> PDFColor?
+    func tableChapter(_ tableChapter: TableChapter, backgroundColorForRowAtIndexPath indexPath: PDFIndexPath) -> PDFColor?
     
     
     // MARK: Column Formatting
@@ -62,13 +62,13 @@ public protocol TableChapterDataSource: class {
      
      e.g. `[1.0, 1.0, 2.0, 1.0]` will cause the 3rd column to be twice as wide as the rest.
      */
-    func tableChapter(_ tableChapter: TableChapter, columnWidthWeightsForSection: Int) -> [Double]?
+    func tableChapter(_ tableChapter: TableChapter, columnWidthWeightsForSection section: Int) -> [Double]?
     
     /// Asks the data source for the inter-column spacing in the given section.
-    func tableChapter(_ tableChapter: TableChapter, spacingForColumnsInSection: Int) -> Double
+    func tableChapter(_ tableChapter: TableChapter, spacingForColumnsInSection section: Int) -> Double
     
     /// Asks the data source for the insets for the given section.
-    func tableChapter(_ tableChapter: TableChapter, insetsForSection: Int) -> PDFEdgeInsets
+    func tableChapter(_ tableChapter: TableChapter, insetsForSection section: Int) -> PDFEdgeInsets
     
     /// Asks the data source for the insets for the given row.
     func tableChapter(_ tableChapter: TableChapter, insetsForRowAtIndexPath indexPath: PDFIndexPath) -> PDFEdgeInsets
@@ -76,10 +76,10 @@ public protocol TableChapterDataSource: class {
     // MARK: Headers and Footers
     
     /// Asks the data source for the header region for the given page.
-    func tableChapter(_ tableChapter: TableChapter, headerRegionForPage: Int) -> PDFRegion?
+    func tableChapter(_ tableChapter: TableChapter, headerRegionForPage page: Int) -> PDFRegion?
     
     /// Asks the data source for the footer region for the given page.
-    func tableChapter(_ tableChapter: TableChapter, footerRegionForPage: Int) -> PDFRegion?
+    func tableChapter(_ tableChapter: TableChapter, footerRegionForPage page: Int) -> PDFRegion?
     
     /// Asks the data source for the header region for the given section.
     func tableChapter(_ tableChapter: TableChapter, headerRegionForSection section: Int) -> PDFRegion?
@@ -100,23 +100,23 @@ public protocol TableChapterDataSource: class {
 
 public extension TableChapterDataSource {
     
-    func tableChapter(_ tableChapter: TableChapter, backgroundColorForRowAtIndexPath: PDFIndexPath) -> PDFColor? {
+    func tableChapter(_ tableChapter: TableChapter, backgroundColorForRowAtIndexPath indexPath: PDFIndexPath) -> PDFColor? {
         return nil
     }
     
-    func tableChapter(_ tableChapter: TableChapter, columnWidthWeightsForSection: Int) -> [Double]? {
+    func tableChapter(_ tableChapter: TableChapter, columnWidthWeightsForSection section: Int) -> [Double]? {
         return nil
     }
     
-    func tableChapter(_ tableChapter: TableChapter, spacingForColumnsInSection: Int) -> Double {
+    func tableChapter(_ tableChapter: TableChapter, spacingForColumnsInSection section: Int) -> Double {
         return 0.0
     }
     
-    func tableChapter(_ tableChapter: TableChapter, headerRegionForPage: Int) -> PDFRegion? {
+    func tableChapter(_ tableChapter: TableChapter, headerRegionForPage page: Int) -> PDFRegion? {
         return nil
     }
     
-    func tableChapter(_ tableChapter: TableChapter, footerRegionForPage: Int) -> PDFRegion? {
+    func tableChapter(_ tableChapter: TableChapter, footerRegionForPage page: Int) -> PDFRegion? {
         return nil
     }
     
@@ -128,11 +128,11 @@ public extension TableChapterDataSource {
         return nil
     }
     
-    func tableChapter(_ tableChapter: TableChapter, outlineTitleForSection: Int) -> String? {
+    func tableChapter(_ tableChapter: TableChapter, outlineTitleForSection section: Int) -> String? {
         return nil
     }
     
-    func tableChapter(_ tableChapter: TableChapter, insetsForSection: Int) -> PDFEdgeInsets {
+    func tableChapter(_ tableChapter: TableChapter, insetsForSection section: Int) -> PDFEdgeInsets {
         return .zero
     }
     

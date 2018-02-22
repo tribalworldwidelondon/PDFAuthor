@@ -100,6 +100,9 @@ open class TableChapter: PDFChapter {
         if (renderHeader) {
             if let header = dataSource!.tableChapter(self, headerRegionForSection: section) {
                 renderSectionHeader(header, forSection: section)
+            } else {
+                let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
+                currentY += sectionInsets.top
             }
         }
 

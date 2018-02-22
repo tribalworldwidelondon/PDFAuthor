@@ -288,7 +288,7 @@ open class PDFRegion {
          - context: The CGContext to draw into
          - rect: A rect providing bounds in which to draw
      */
-    public func draw(withContext context: CGContext, inRect rect: CGRect) {
+    open func draw(withContext context: CGContext, inRect rect: CGRect) {
     }
     
     internal func borderPaths(inRect rect: CGRect) -> [CGPath] {
@@ -630,7 +630,7 @@ open class PDFRegion {
     }
     
     /// A returns the intrinsicContentSize of the region. Override this to provide your own value.
-    public func intrinsicContentSize() -> CGSize? {
+    open func intrinsicContentSize() -> CGSize? {
         return nil
     }
 }

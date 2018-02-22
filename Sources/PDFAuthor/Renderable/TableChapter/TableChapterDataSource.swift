@@ -50,7 +50,12 @@ public protocol TableChapterDataSource: class {
     
     /// Asks the data source for the background color of a row in the table
     func tableChapter(_ tableChapter: TableChapter, backgroundColorForRowAtIndexPath indexPath: PDFIndexPath) -> PDFColor?
-    
+
+    /**
+     Asks the data source for the background color of the page at the given index.
+     When not nil, this overrides the global page color.
+     */
+    func tableChapter(_ tableChapter: TableChapter, backgroundColorForPage page:Int) -> PDFColor?
     
     // MARK: Column Formatting
     
@@ -103,7 +108,11 @@ public extension TableChapterDataSource {
     func tableChapter(_ tableChapter: TableChapter, backgroundColorForRowAtIndexPath indexPath: PDFIndexPath) -> PDFColor? {
         return nil
     }
-    
+
+    public func tableChapter(_ tableChapter: TableChapter, backgroundColorForPage page: Int) -> PDFColor? {
+        return nil
+    }
+
     func tableChapter(_ tableChapter: TableChapter, columnWidthWeightsForSection section: Int) -> [Double]? {
         return nil
     }

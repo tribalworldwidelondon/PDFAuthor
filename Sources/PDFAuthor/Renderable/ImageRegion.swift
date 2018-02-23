@@ -216,15 +216,9 @@ public class ImageRegion: PDFRegion {
         let width = imageSize.width / scaleFactor
         let height = imageSize.height / scaleFactor
         
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        
-        if width > height {
-            y = (bounds.height - height) / 2.0
-        } else if height > width {
-            x = (bounds.width - width) / 2.0
-        }
-        
+        let x = (bounds.width - width) / 2.0
+        let y = (bounds.height - height) / 2.0
+
         return CGRect(x: x, y: y, width: width, height: height)
     }
     

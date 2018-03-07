@@ -13,6 +13,9 @@ let package = Package(
         .executable(
             name: "PDFAuthorDemo",
             targets: ["PDFAuthorDemo"]),
+        .executable(
+            name: "StackRegionDemo",
+            targets: ["StackRegionDemo"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -28,6 +31,9 @@ let package = Package(
             dependencies: ["Cassowary"]),
         .target(
             name: "PDFAuthorDemo",
+            dependencies: ["PDFAuthor"]),
+        .target(
+            name: "StackRegionDemo",
             dependencies: ["PDFAuthor"]),
         .testTarget(
             name: "PDFAuthorTests",

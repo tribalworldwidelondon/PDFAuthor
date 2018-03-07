@@ -122,7 +122,7 @@ open class TableChapter: PDFChapter {
 
             row.addConstraints(row.left == currentPage.leftInset + sectionInsets.left, row.top == currentY)
             currentPage.addChild(row)
-            currentY += CGFloat(row.height.value)
+            currentY += CGFloat(row.frame.size.height)
         }
 
     }
@@ -256,7 +256,7 @@ open class TableChapter: PDFChapter {
             row.addChild(column)
 
             // Add constraints for the top and bottom
-            column.addConstraints(column.top == row.topInset, column.bottom == row.bottomInset)
+            column.addConstraints(column.top == row.topInset, column.bottom <= row.bottomInset)
         }
 
         // Constrain the first and last column to the edges of the row

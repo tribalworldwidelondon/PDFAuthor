@@ -153,12 +153,14 @@ extension PDFRegion {
         
         // Get suggested values after constraint variables have already been updated to allow, for instance,
         // String region to suggest a height based on its constrained width.
-        for (variable, strength, suggestedValue) in recursivelyGetSuggestedValues() {
+
+        let suggestedValues = recursivelyGetSuggestedValues()
+        for (variable, strength, suggestedValue) in suggestedValues {
             do {
                 try solver.addEditVariable(variable: variable, strength: strength)
                 try solver.suggestValue(variable: variable, value: suggestedValue)
             } catch {
-                print("Error adding edit variable: \(variable), \(suggestedValue)")
+                print("Error adding edit variable: \(variable), \(suggestedValue) \(error)")
             }
         }
         
@@ -166,12 +168,12 @@ extension PDFRegion {
 
         // TODO: Find a more efficient way to do this. String region relies on this to calculate its size
         // Get new suggestions for edit variables for cases where edit variables depend on other edit variables
-        for (variable, strength, suggestedValue) in recursivelyGetSuggestedValues() {
+        for (variable, strength, suggestedValue) in suggestedValues {
             do {
                 //try solver.addEditVariable(variable: variable, strength: strength)
                 try solver.suggestValue(variable: variable, value: suggestedValue)
             } catch {
-                print("Error adding edit variable: \(variable), \(suggestedValue)")
+                print("Error adding edit variable: \(variable), \(suggestedValue) \(error)")
             }
         }
 

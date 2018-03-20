@@ -34,8 +34,12 @@ import Cassowary
 /// A class representing a page in a PDF document.
 public class PDFPage: PDFRegion {
     
-    internal var specifications: PDFPageSpecifications
-    internal var backgroundInsets: PDFEdgeInsets
+    public private(set) var specifications: PDFPageSpecifications
+    public private(set) var backgroundInsets: PDFEdgeInsets
+
+    public var contentWidth: CGFloat {
+        return self.specifications.size.width - self.specifications.contentInsets.left - self.specifications.contentInsets.right
+    }
     
     // MARK: Initialization
     

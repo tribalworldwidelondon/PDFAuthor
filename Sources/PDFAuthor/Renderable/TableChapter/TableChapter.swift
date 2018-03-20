@@ -248,7 +248,7 @@ open class TableChapter: PDFChapter {
     }
 
     /// Generates a region containing all column regions for a row, and sets up the constraints accordingly
-    internal func regionForRow(columns: [PDFRegion], weights: [Double], spacing: Double, insets: PDFEdgeInsets) -> PDFRegion {
+    internal func regionForRow(columns: [PDFRegion], weights: [Double], spacing: Double, insets: PDFEdgeInsets, rowWidth: Double) -> PDFRegion {
         let row = PDFRegion(frame: .zero)
         row.edgeInsets = insets
 
@@ -273,7 +273,8 @@ open class TableChapter: PDFChapter {
 
             // Add width constraint
             let space = (spacing * Double(columns.count - 1))
-            col.addConstraints((col.width == (row.width - row.edgeInsetLeft - row.edgeInsetRight - space) * weights[i]).setStrength(Strength.STRONG))
+            let columnWidth = ((rowWidth - Double(row.edgeInsets.left - row.edgeInsets.right) - space) * weights[i])
+            col.addConstraints((col.width == columnWidth).setStrength(Strength.STRONG))
 
             if i < 1 {
                 continue
@@ -294,7 +295,7 @@ open class TableChapter: PDFChapter {
         for rowNum in 0..<numRows {
             let rowColumns = columns(forRow: rowNum, inSection: section, numColumns: numColumns)
             let rowInsets = dataSource!.tableChapter(self, insetsForRowAtIndexPath: PDFIndexPath(section: section, row: rowNum, column: 0))
-            let row = regionForRow(columns: rowColumns, weights: columnWeights, spacing: columnSpacing, insets: rowInsets)
+            let row = regionForRow(columns: rowColumns, weights: columnWeights, spacing: columnSpacing, insets: rowInsets, rowWidth: Double(sectionWidth))
 
             row.addConstraints(row.width == sectionWidth)
 

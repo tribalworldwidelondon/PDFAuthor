@@ -42,6 +42,8 @@ open class PDFRegion {
     
     /// The background color of the region. Defaults to .clear
     public var backgroundColor: PDFColor = .clear
+
+    public var urlLink: URL? = nil
     
     /// An enum representing the different border styles
     public enum BorderStyle {
@@ -367,6 +369,11 @@ open class PDFRegion {
             break
             
         default: break
+        }
+
+        // Make this region a link
+        if let link = urlLink {
+            context.setURL(link as CFURL, for: self.bounds)
         }
         
         context.restoreGState()

@@ -125,6 +125,22 @@ open class TableChapter: PDFChapter {
             currentY += CGFloat(row.frame.size.height)
         }
 
+        if let footer = dataSource!.tableChapter(self, footerRegionForSection: section) {
+            footer.addConstraints(footer.width == currentPage.contentWidth)
+            footer.updateConstraints()
+            let footerHeight = CGFloat(footer.height.value)
+
+            if remainingSpace < footerHeight {
+                newTablePage()
+            }
+
+            currentPage.addChild(footer)
+
+            footer.addConstraints(footer.top == currentY,
+                                  footer.left == currentY)
+            currentY += footerHeight
+        }
+
     }
 
     internal func renderSectionHeader(_ header: PDFRegion, forSection section: Int) {

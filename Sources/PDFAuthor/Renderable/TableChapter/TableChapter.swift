@@ -137,7 +137,7 @@ open class TableChapter: PDFChapter {
             currentPage.addChild(footer)
 
             footer.addConstraints(footer.top == currentY,
-                                  footer.left == currentY)
+                                  footer.left == currentPage.leftInset)
             currentY += footerHeight
         }
 

@@ -74,6 +74,10 @@ open class TableChapter: PDFChapter {
     /// Default background color for pages. Can be overridden by the delegate method
     public var pageBackgroundColor: PDFColor?
 
+    public var contentWidth: CGFloat {
+        return self.pageSpecifications.size.width - self.pageSpecifications.contentInsets.left - self.pageSpecifications.contentInsets.right
+    }
+
     // MARK: Dynamic Generation
 
     open override func generate() {

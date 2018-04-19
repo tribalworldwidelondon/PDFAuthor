@@ -38,6 +38,7 @@ let document = PDFAuthorDocument().with {
     $0.addChapter(TitleChapter(pageSpecifications: pageSpecifications))
     $0.addChapter(MaskChapter(pageSpecifications: pageSpecifications))
     $0.addChapter(PhoneBillChapter(pageSpecifications: pageSpecifications))
+    $0.addChapter(TextColumnsChapter(pageSpecifications: pageSpecifications))
 }
 
 try document.generate(to: URL(fileURLWithPath: ("~/Desktop/test1.pdf" as NSString).expandingTildeInPath)) { progress in

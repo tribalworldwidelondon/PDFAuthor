@@ -34,7 +34,7 @@ import CoreText
     public typealias PDFFont = UIFont
 #endif
 
-/// A PDF region that renders and NSAttributedString
+/// A PDF region that renders an NSAttributedString
 public class StringRegion: PDFRegion {
     /// The attributed string that this region will draw
     public var attributedString: NSAttributedString?

@@ -173,6 +173,15 @@ open class TableChapter: PDFChapter {
     internal func newTablePage() -> PDFPage {
 
         return withNewPage {
+            if let backgroundRegion = self.dataSource?.tableChapter(self,
+                                                                     backgroundRegionForPage: self.currentPageNum) {
+                $0.addChild(backgroundRegion)
+                backgroundRegion.addConstraints(backgroundRegion.top == $0.topBackgroundInset,
+                                                backgroundRegion.bottom == $0.bottomBackgroundInset,
+                                                backgroundRegion.left == $0.leftBackgroundInset,
+                                                backgroundRegion.right == $0.rightBackgroundInset`)
+            }
+            
             if let color = self.dataSource?.tableChapter(self, backgroundColorForPage: self.currentPageNum) {
                 $0.backgroundColor = color
             } else if let color = self.pageBackgroundColor {

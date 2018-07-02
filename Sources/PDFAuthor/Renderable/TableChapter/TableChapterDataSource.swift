@@ -57,6 +57,13 @@ public protocol TableChapterDataSource: class {
      */
     func tableChapter(_ tableChapter: TableChapter, backgroundColorForPage page:Int) -> PDFColor?
     
+    /**
+     Asks the data source for a background region to add to the page at the given index.
+     When not nil, the region is added as a child of the page, with the constraints making
+     the edges equal to the background insets of the page.
+     */
+    func tableChapter(_ tableChapter: TableChapter, backgroundRegionForPage page: Int) -> PDFRegion?
+    
     // MARK: Column Formatting
     
     /**
@@ -110,6 +117,10 @@ public extension TableChapterDataSource {
     }
 
     public func tableChapter(_ tableChapter: TableChapter, backgroundColorForPage page: Int) -> PDFColor? {
+        return nil
+    }
+    
+    public func tableChapter(_ tableChapter: TableChapter, backgroundRegionForPage page: Int) -> PDFRegion? {
         return nil
     }
 

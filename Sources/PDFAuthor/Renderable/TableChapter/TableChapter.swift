@@ -179,7 +179,7 @@ open class TableChapter: PDFChapter {
                 backgroundRegion.addConstraints(backgroundRegion.top == $0.topBackgroundInset,
                                                 backgroundRegion.bottom == $0.bottomBackgroundInset,
                                                 backgroundRegion.left == $0.leftBackgroundInset,
-                                                backgroundRegion.right == $0.rightBackgroundInset`)
+                                                backgroundRegion.right == $0.rightBackgroundInset)
             }
             
             if let color = self.dataSource?.tableChapter(self, backgroundColorForPage: self.currentPageNum) {

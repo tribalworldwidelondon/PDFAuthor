@@ -64,7 +64,7 @@ public class MultiColumnStringRegion: PDFRegion {
             return nil
         }
 
-        var attributes: [NSAttributedStringKey: Any] = [:]
+        var attributes: [NSAttributedString.Key: Any] = [:]
 
         if let textColor = textColor {
             attributes[.foregroundColor] = textColor.cgColor

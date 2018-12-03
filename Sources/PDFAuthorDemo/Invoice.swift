@@ -128,7 +128,7 @@ class PhoneBillChapter: TableChapter, TableChapterDataSource {
         mainStack.distribution = .fill
         
         let components = Calendar.current.dateComponents([.month, .year], from: Date())
-        let month = Calendar.current.monthSymbols[components.month!]
+        let month = Calendar.current.monthSymbols[components.month! - 1]
 
         var titleText = "Bill Details for \(month) \(components.year!)"
         

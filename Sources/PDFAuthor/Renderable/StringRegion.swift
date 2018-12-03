@@ -75,7 +75,7 @@ public class StringRegion: PDFRegion {
     }
     
     /// Initialize with the given String and a dictionary of attributes
-    public convenience init(string: String, attributes: [NSAttributedStringKey: Any]) {
+    public convenience init(string: String, attributes: [NSAttributedString.Key: Any]) {
         self.init(attributedString: NSAttributedString(string: string, attributes: attributes))
     }
     
@@ -84,7 +84,7 @@ public class StringRegion: PDFRegion {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = alignment
         
-        let attributes: [NSAttributedStringKey: Any] = [
+        let attributes: [NSAttributedString.Key: Any] = [
             .font: font as CTFont,
             .foregroundColor: color.cgColor,
             .paragraphStyle: paragraphStyle
@@ -95,7 +95,7 @@ public class StringRegion: PDFRegion {
     
     /// Initialize with a string, font and text color
     public convenience init(string: String, font: PDFFont, color: PDFColor) {
-        let attributes: [NSAttributedStringKey: Any] = [
+        let attributes: [NSAttributedString.Key: Any] = [
             .font: font as CTFont,
             .foregroundColor: color.cgColor
         ]
@@ -105,7 +105,7 @@ public class StringRegion: PDFRegion {
     
     /// Initialize with a string and text color
     public convenience init(string: String, color: PDFColor) {
-        let attributes: [NSAttributedStringKey: Any] = [
+        let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: color.cgColor
         ]
         
@@ -114,7 +114,7 @@ public class StringRegion: PDFRegion {
     
     /// Initialize with a string and font
     public convenience init(string: String, font: PDFFont) {
-        let attributes: [NSAttributedStringKey: Any] = [
+        let attributes: [NSAttributedString.Key: Any] = [
             .font: font as CTFont
         ]
         

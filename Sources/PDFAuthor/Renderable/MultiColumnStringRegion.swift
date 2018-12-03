@@ -265,7 +265,7 @@ public class MultiColumnStringRegion: PDFRegion {
             return size(constrainedToWidth: width)
         }
 
-        guard let str = attributedString else {
+        guard attributedString != nil else {
             return .zero
         }
 

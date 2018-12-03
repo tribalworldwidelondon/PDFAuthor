@@ -48,8 +48,8 @@ public class PDFAuthorDocument {
          - progressCallback: A callback that takes a Double argument, which is the progress of the PDF
                              generation represented by a value between 0 and 1.
      */
-    public func generate(to url: URL, progressCallback: ((Double) -> Void)? = nil) throws {
-        guard let pdfContext = CGContext(url as CFURL, mediaBox: nil, nil) else {
+    public func generate(to url: URL, auxiliaryDict: CFDictionary? = nil, progressCallback: ((Double) -> Void)? = nil) throws {
+        guard let pdfContext = CGContext(url as CFURL, mediaBox: nil, auxiliaryDict) else {
             throw PDFError.cannotCreateDocument
         }
         

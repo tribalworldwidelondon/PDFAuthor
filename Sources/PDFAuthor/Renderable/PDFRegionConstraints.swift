@@ -168,7 +168,7 @@ extension PDFRegion {
 
         // TODO: Find a more efficient way to do this. String region relies on this to calculate its size
         // Get new suggestions for edit variables for cases where edit variables depend on other edit variables
-        for (variable, strength, suggestedValue) in suggestedValues {
+        for (variable, _, suggestedValue) in suggestedValues {
             do {
                 //try solver.addEditVariable(variable: variable, strength: strength)
                 try solver.suggestValue(variable: variable, value: suggestedValue)

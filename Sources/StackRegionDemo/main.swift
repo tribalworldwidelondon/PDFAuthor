@@ -117,7 +117,7 @@ func main() {
     document.addChapter(DemoChapter(pageSpecifications: pageSpecifications))
     
     do {
-        try document.generate(to: URL(fileURLWithPath: "/Users/andybest/Desktop/stackTest.pdf")) {
+        try document.generate(to: URL(fileURLWithPath: "~/Desktop/stackTest.pdf")) {
             print("Progress: \($0 * 100)%")
         }
     } catch {

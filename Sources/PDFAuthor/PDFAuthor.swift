@@ -1,34 +1,34 @@
 /*
-     MIT License
-     
-     Copyright (c) 2017 Tribal Worldwide London
-     
-     Permission is hereby granted, free of charge, to any person obtaining a copy
-     of this software and associated documentation files (the "Software"), to deal
-     in the Software without restriction, including without limitation the rights
-     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-     copies of the Software, and to permit persons to whom the Software is
-     furnished to do so, subject to the following conditions:
-     
-     The above copyright notice and this permission notice shall be included in all
-     copies or substantial portions of the Software.
-     
-     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-     SOFTWARE.
+ MIT License
+ 
+ Copyright (c) 2017 Tribal Worldwide London
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
  */
 
 import Foundation
 import CoreGraphics
 
 #if os(OSX)
-    import Quartz
+import Quartz
 #elseif os(iOS)
-    import PDFKit
+import PDFKit
 #endif
 
 /// A class representing a PDF document holding a number of chapters
@@ -44,15 +44,11 @@ public class PDFAuthorDocument {
     /**
      Generate the PDF document and save it to the given URL.
      - parameters:
-         - url: The URL at which to save the generated document
-         - progressCallback: A callback that takes a Double argument, which is the progress of the PDF
-                             generation represented by a value between 0 and 1.
+     - url: The URL at which to save the generated document
+     - progressCallback: A callback that takes a Double argument, which is the progress of the PDF
+     generation represented by a value between 0 and 1.
      */
     public func generate(to url: URL, auxiliaryDict: CFDictionary? = nil, progressCallback: ((Double) -> Void)? = nil) throws {
-        guard let pdfContext = CGContext(url as CFURL, mediaBox: nil, auxiliaryDict) else {
-            throw PDFError.cannotCreateDocument
-        }
-        
         // Chapter generation is 0%-50% progress
         let chapterProgressStep = 0.5 / Double(chapters.count)
         
@@ -73,21 +69,78 @@ public class PDFAuthorDocument {
         // Page rendering is 50%-100% of progress
         let pageProgressStep = 0.5 / Double(numPages)
         
-        for chapter in chapters {
-            for page in chapter.pages {
-                page.render(toContext: pdfContext)
-                progress += pageProgressStep
-                if progressCallback != nil {
-                    progressCallback!(progress)
+        var renderOperations: [Operation] = []
+        var pageURLs: [URL] = []
+        
+        for (chapterIdx, chapter) in chapters.enumerated() {
+            for (pageIdx, page) in chapter.pages.enumerated() {
+                let tempURL: URL
+                
+                if #available(iOS 10, OSX 10.12, *) {
+                    tempURL = FileManager.default.temporaryDirectory
+                } else {
+                    tempURL = URL(fileURLWithPath: NSTemporaryDirectory())
                 }
+                
+                let pageURL = tempURL.appendingPathComponent("brochure_\(chapterIdx)_\(pageIdx)")
+                    .appendingPathExtension("pdf")
+                
+                pageURLs.append(pageURL)
+                
+                let operation = BlockOperation {
+                    guard let pageContext = CGContext(pageURL as CFURL, mediaBox: nil, auxiliaryDict) else {
+                        return
+                    }
+                    
+                    page.render(toContext: pageContext)
+                    
+                    pageContext.flush()
+                    pageContext.closePDF()
+                }
+                
+                renderOperations.append(operation)
+            }
+        }
+        
+        // Generate pages in parallel
+        let queue = OperationQueue()
+        queue.addOperations(renderOperations, waitUntilFinished: true)
+        
+        guard let pdfContext = CGContext(url as CFURL, mediaBox: nil, auxiliaryDict) else {
+            throw PDFError.cannotCreateDocument
+        }
+        
+        // Merge pages into one PDF
+        for pageURL in pageURLs {
+            guard let doc = CGPDFDocument(pageURL as CFURL) else {
+                print("Unable to load PDF page at \(pageURL)")
+                throw PDFError.cannotCreateDocument
+            }
+            
+            for pageIdx in 1...doc.numberOfPages {
+                guard let sourcePage = doc.page(at: pageIdx) else {
+                    throw PDFError.cannotCreateDocument
+                }
+                
+                var sourceMediaBox = sourcePage.getBoxRect(CGPDFBox.mediaBox)
+                pdfContext.beginPage(mediaBox: &sourceMediaBox)
+                pdfContext.drawPDFPage(sourcePage)
+                pdfContext.endPage()
             }
         }
         
         pdfContext.flush()
         pdfContext.closePDF()
         
+        
+        // Delete temp files
+        
+        for pageURL in pageURLs {
+            try? FileManager.default.removeItem(at: pageURL)
+        }
+        
         // Generate document outline on supported platforms
-        if #available(OSX 10.4, *), #available(iOS 11, *) {
+        if #available(OSX 10.4, iOS 11, *) {
             guard let doc = PDFDocument(url: url) else {
                 print("Unable to generate document outline!")
                 return

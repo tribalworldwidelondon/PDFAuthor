@@ -72,6 +72,8 @@ public class PDFAuthorDocument {
         var renderOperations: [Operation] = []
         var pageURLs: [URL] = []
         
+        let semaphore = DispatchSemaphore(value: 1)
+        
         for (chapterIdx, chapter) in chapters.enumerated() {
             for (pageIdx, page) in chapter.pages.enumerated() {
                 let tempURL: URL
@@ -96,6 +98,13 @@ public class PDFAuthorDocument {
                     
                     pageContext.flush()
                     pageContext.closePDF()
+                    
+                    semaphore.wait()
+                    progress += pageProgressStep
+                    if let cb = progressCallback {
+                        cb(progress)
+                    }
+                    semaphore.signal()
                 }
                 
                 renderOperations.append(operation)

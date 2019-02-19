@@ -101,7 +101,7 @@ public enum ImageContentMode {
 }
 
 /// A PDF Region that holds an image
-public class ImageRegion: PDFRegion {
+public final class ImageRegion: PDFRegion {
     
     /// The content mode of the image. This affects how the image is positioned and scaled within the frame.
     public var contentMode: ImageContentMode = .center

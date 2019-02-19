@@ -33,7 +33,7 @@ import UIKit
 #endif
 
 /// A PDF region that renders a String in multiple columns
-public class MultiColumnStringRegion: PDFRegion {
+public final class MultiColumnStringRegion: PDFRegion {
     /// The string that this region will draw
     public var string: String?
 

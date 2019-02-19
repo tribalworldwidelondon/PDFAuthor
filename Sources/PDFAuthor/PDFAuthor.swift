@@ -32,7 +32,7 @@ import PDFKit
 #endif
 
 /// A class representing a PDF document holding a number of chapters
-public class PDFAuthorDocument {
+public final class PDFAuthorDocument {
     
     private(set) var chapters: [PDFChapter] = []
     

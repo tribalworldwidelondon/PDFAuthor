@@ -32,7 +32,7 @@ import Cassowary
 #endif
 
 /// A class representing a page in a PDF document.
-public class PDFPage: PDFRegion {
+public final class PDFPage: PDFRegion {
     
     public private(set) var specifications: PDFPageSpecifications
     public private(set) var backgroundInsets: PDFEdgeInsets

@@ -18,6 +18,8 @@ Pod::Spec.new do |s|
   
   s.source       = { :git => "https://github.com/tribalworldwidelondon/PDFAuthor.git", :tag => "0.1.2" }
   s.source_files  = "Sources/PDFAuthor/**/*.{swift}"
+
+  s.swift_version = '4.1'
   
   s.dependency "Cassowary", "~> 2.0.1"
 

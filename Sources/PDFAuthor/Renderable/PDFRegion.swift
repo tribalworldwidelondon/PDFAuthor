@@ -373,7 +373,7 @@ open class PDFRegion {
 
         // Make this region a link
         if let link = urlLink {
-            context.setURL(link as CFURL, for: self.bounds)
+            context.setURL(link as CFURL, for: self.bounds.applying(context.ctm))
         }
         
         context.restoreGState()

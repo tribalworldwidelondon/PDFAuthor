@@ -114,7 +114,7 @@ open class TableChapter: PDFChapter {
 
         for (offset:idx, element:row) in sectionRows.enumerated() {
             // If there is not enough space left for the row, start a new page
-            if remainingSpace < CGFloat(row.height.value) {
+            if remainingSpace < CGFloat(row.height.value) && idx > 0 {
                 newTablePage()
 
                 let remainingRows = Array(sectionRows.dropFirst(idx))

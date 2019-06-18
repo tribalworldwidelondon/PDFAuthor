@@ -34,11 +34,73 @@ import PDFKit
 /// A class representing a PDF document holding a number of chapters
 public final class PDFAuthorDocument {
     
+    /// An enum specifying the way in which documents get generated
+    public enum GenerationMethod {
+        /// Generate the document on one thread, using a single CGContext
+        case serial
+        
+        /// Generate the document in parallel on multiple threads, using multiple CGContexts,
+        /// stitching the pages together afterwards.
+        case parallel
+    }
+    
     private(set) var chapters: [PDFChapter] = []
     
     /// Initialize a new document
     public init() {
         
+    }
+    
+    private func generateSerially(to url: URL, auxiliaryDict: CFDictionary? = nil, progressCallback: ((Double) -> Void)? = nil) throws {
+        // Chapter generation is 0%-50% progress
+        let chapterProgressStep = 0.5 / Double(chapters.count)
+        
+        var progress = 0.0
+        
+        for chapter in chapters {
+            chapter.generate()
+            progress += chapterProgressStep
+            if progressCallback != nil {
+                progressCallback!(progress)
+            }
+        }
+        
+        let numPages = chapters.reduce(0) {
+            $0 + $1.pages.count
+        }
+        
+        // Page rendering is 50%-100% of progress
+        let pageProgressStep = 0.5 / Double(numPages)
+        
+        guard let context = CGContext(url as CFURL, mediaBox: nil, auxiliaryDict) else {
+            return
+        }
+        
+        for chapter in chapters {
+            for page in chapter.pages {
+                page.render(toContext: context)
+                
+                progress += pageProgressStep
+                if let cb = progressCallback {
+                    cb(progress)
+                }
+            }
+        }
+        
+        context.flush()
+        context.closePDF()
+        
+        // Generate document outline on supported platforms
+        if #available(OSX 10.4, iOS 11, *) {
+            guard let doc = PDFDocument(url: url) else {
+                print("Unable to generate document outline!")
+                return
+            }
+            
+            let o = generateOutlineObject(forDocument: doc)
+            doc.outlineRoot = o
+            doc.write(to: url)
+        }
     }
     
     /**
@@ -48,7 +110,12 @@ public final class PDFAuthorDocument {
      - progressCallback: A callback that takes a Double argument, which is the progress of the PDF
      generation represented by a value between 0 and 1.
      */
-    public func generate(to url: URL, auxiliaryDict: CFDictionary? = nil, progressCallback: ((Double) -> Void)? = nil) throws {
+    public func generate(to url: URL, auxiliaryDict: CFDictionary? = nil, method: GenerationMethod = .parallel, progressCallback: ((Double) -> Void)? = nil) throws {
+        if method == .serial {
+            try generateSerially(to: url, auxiliaryDict: auxiliaryDict, progressCallback: progressCallback)
+            return
+        }
+        
         // Chapter generation is 0%-50% progress
         let chapterProgressStep = 0.5 / Double(chapters.count)
         

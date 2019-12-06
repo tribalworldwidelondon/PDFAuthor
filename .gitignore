@@ -6,3 +6,5 @@ bin
 .DS_Store
 .PDFAuthorDoc.json
 .build
+.swiftpm
+Package.resolved

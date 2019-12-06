@@ -211,9 +211,7 @@ open class TableChapter: PDFChapter {
             }
 
             if let pageFooter: PDFRegion = ds.tableChapter(self, footerRegionForPage: currentPageNum) {
-                let footerWidth = currentPage.specifications.size.width
-                        - currentPage.edgeInsets.left
-                        - currentPage.edgeInsets.right
+                let footerWidth = currentPage.contentWidth
 
                 $0.addChild(pageFooter)
 

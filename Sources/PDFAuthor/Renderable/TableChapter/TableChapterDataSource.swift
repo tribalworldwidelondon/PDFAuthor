@@ -116,11 +116,11 @@ public extension TableChapterDataSource {
         return nil
     }
 
-    public func tableChapter(_ tableChapter: TableChapter, backgroundColorForPage page: Int) -> PDFColor? {
+    func tableChapter(_ tableChapter: TableChapter, backgroundColorForPage page: Int) -> PDFColor? {
         return nil
     }
     
-    public func tableChapter(_ tableChapter: TableChapter, backgroundRegionForPage page: Int) -> PDFRegion? {
+    func tableChapter(_ tableChapter: TableChapter, backgroundRegionForPage page: Int) -> PDFRegion? {
         return nil
     }
 

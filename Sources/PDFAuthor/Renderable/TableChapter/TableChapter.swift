@@ -114,7 +114,7 @@ open class TableChapter: PDFChapter {
 
         for (offset:idx, element:row) in sectionRows.enumerated() {
             // If there is not enough space left for the row, start a new page
-            if remainingSpace < CGFloat(row.height.value) {
+            if remainingSpace < CGFloat(row.height.value)  {
                 newTablePage()
 
                 let remainingRows = Array(sectionRows.dropFirst(idx))
@@ -148,24 +148,22 @@ open class TableChapter: PDFChapter {
     }
 
     internal func renderSectionHeader(_ header: PDFRegion, forSection section: Int) {
-        currentPage.addChild(header)
-
         let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
         let sectionWidth = widthForSection(section)
 
-
-        header.addConstraints(header.left == currentPage.leftInset + sectionInsets.left,
-                header.top == currentY + sectionInsets.top,
-                header.width == sectionWidth)
-
+        header.addConstraints(header.width == sectionWidth)
         header.updateConstraints()
-
         let headerHeight = CGFloat(header.height.value)
 
-        if headerHeight > remainingSpace {
+        if remainingSpace < (headerHeight + sectionInsets.top) {
             newTablePage()
         }
-
+		
+		currentPage.addChild(header)
+		
+        header.addConstraints(header.left == currentPage.leftInset + sectionInsets.left,
+                header.top == currentY + sectionInsets.top)
+		
         currentY += headerHeight + sectionInsets.top
     }
 
@@ -198,6 +196,7 @@ open class TableChapter: PDFChapter {
                 let headerWidth = currentPage.contentWidth
 
                 $0.addChild(pageHeader)
+				
                 pageHeader.addConstraints(pageHeader.left == currentPage.leftInset,
                         pageHeader.top == currentPage.topInset,
                         pageHeader.width == headerWidth)

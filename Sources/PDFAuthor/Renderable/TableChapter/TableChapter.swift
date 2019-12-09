@@ -114,7 +114,7 @@ open class TableChapter: PDFChapter {
 
         for (offset:idx, element:row) in sectionRows.enumerated() {
             // If there is not enough space left for the row, start a new page
-            if remainingSpace < CGFloat(row.height.value) && idx > 0 {
+            if remainingSpace < CGFloat(row.height.value) {
                 newTablePage()
 
                 let remainingRows = Array(sectionRows.dropFirst(idx))
@@ -195,9 +195,7 @@ open class TableChapter: PDFChapter {
             }
 
             if let pageHeader: PDFRegion = ds.tableChapter(self, headerRegionForPage: currentPageNum) {
-                let headerWidth = currentPage.specifications.size.width
-                        - currentPage.edgeInsets.left
-                        - currentPage.edgeInsets.right
+                let headerWidth = currentPage.contentWidth
 
                 $0.addChild(pageHeader)
                 pageHeader.addConstraints(pageHeader.left == currentPage.leftInset,

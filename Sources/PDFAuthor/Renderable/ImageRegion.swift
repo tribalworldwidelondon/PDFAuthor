@@ -22,221 +22,218 @@
  SOFTWARE.
  */
 
-
 #if os(OSX)
-    import AppKit
-    
-    public typealias PDFImage = NSImage
+	import AppKit
+
+	public typealias PDFImage = NSImage
 #elseif os(iOS)
-    import UIKit
-    
-    public typealias PDFImage = UIImage
+	import UIKit
+
+	public typealias PDFImage = UIImage
 #endif
 
-
 public enum PDFImageType {
-    case image(PDFImage)
-    case imageBlock(()-> PDFImage?)
-    case cgImage(CGImage)
-    
-    func getCGImage() -> CGImage? {
-        switch self {
-        case .image(let image):
-            #if os(iOS)
-                return image.cgImage
-            #elseif os(OSX)
-                return image.cgImage(forProposedRect: nil, context: nil, hints: nil)
-            #endif
-        case .imageBlock(let f):
-            let image = f()
-            #if os(iOS)
-                return image?.cgImage
-            #elseif os(OSX)
-                return image?.cgImage(forProposedRect: nil, context: nil, hints: nil)
-            #endif
-        case .cgImage(let image):
-            return image
-        }
-    }
-}
+	case image(PDFImage)
+	case imageBlock(() -> PDFImage?)
+	case cgImage(CGImage)
 
+	func getCGImage() -> CGImage? {
+		switch self {
+			case .image(let image):
+				#if os(iOS)
+					return image.cgImage
+				#elseif os(OSX)
+					return image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+				#endif
+			case .imageBlock(let f):
+				let image = f()
+				#if os(iOS)
+					return image?.cgImage
+				#elseif os(OSX)
+					return image?.cgImage(forProposedRect: nil, context: nil, hints: nil)
+				#endif
+			case .cgImage(let image):
+				return image
+		}
+	}
+}
 
 /// The content mode of the image.
 public enum ImageContentMode {
-    /// Scale the image to fill the frame, ignoring the aspect ratio
-    case scaleToFill
-    
-    /// Scale the image to fit the frame, taking the aspect ratio into account
-    case scaleAspectFit
-    
-    /// Scale the image to fill the frame, taking the aspect ratio into account
-    case scaleAspectFill
-    
-    /// Center the image in the frame
-    case center
-    
-    /// Align the image with the top of the frame
-    case top
-    
-    /// Align the image with the bottom of the frame
-    case bottom
-    
-    /// Align the image with the left of the frame
-    case left
-    
-    /// Align the image with the right of the frame
-    case right
-    
-    /// Align the image with the top-left corner of the frame
-    case topLeft
-    
-    /// Align the image with the top-right corner of the frame
-    case topRight
-    
-    /// Align the image with the bottom-left corner of the frame
-    case bottomLeft
-    
-    /// Align the image with the bottom-right corner of the frame
-    case bottomRight
+	/// Scale the image to fill the frame, ignoring the aspect ratio
+	case scaleToFill
+
+	/// Scale the image to fit the frame, taking the aspect ratio into account
+	case scaleAspectFit
+
+	/// Scale the image to fill the frame, taking the aspect ratio into account
+	case scaleAspectFill
+
+	/// Center the image in the frame
+	case center
+
+	/// Align the image with the top of the frame
+	case top
+
+	/// Align the image with the bottom of the frame
+	case bottom
+
+	/// Align the image with the left of the frame
+	case left
+
+	/// Align the image with the right of the frame
+	case right
+
+	/// Align the image with the top-left corner of the frame
+	case topLeft
+
+	/// Align the image with the top-right corner of the frame
+	case topRight
+
+	/// Align the image with the bottom-left corner of the frame
+	case bottomLeft
+
+	/// Align the image with the bottom-right corner of the frame
+	case bottomRight
 }
 
 /// A PDF Region that holds an image
 public final class ImageRegion: PDFRegion {
-    
-    /// The content mode of the image. This affects how the image is positioned and scaled within the frame.
-    public var contentMode: ImageContentMode = .center
-    
-    /// The image to display in the frame
-    public var image: PDFImageType?
-    
-    /// The blend mode to use when rendering the image
-    public var blendMode: CGBlendMode?
-    
-    /// :nodoc:
-    override public func draw(withContext context: CGContext, inRect rect: CGRect) {
-        guard bounds.width > 0, bounds.height > 0 else {
-            return
-        }
-        
-        guard let img = image?.getCGImage() else {
-            return
-        }
-        
-        let imageSize = CGSize(width: CGFloat(img.width),
-                               height: CGFloat(img.height))
-        
-        guard imageSize.width > 0, imageSize.height > 0 else {
-            return
-        }
-        
-        // TODO: Possibly move the clipping to a clipsToBounds property on PDFRegion?
-        context.saveGState()
-        
-        // Transform coordinate system so that images are the right way up
-        context.translateBy(x: 0, y: bounds.height)
-        context.scaleBy(x: 1.0, y: -1.0)
-        
-        if let blendMode = blendMode {
-            context.setBlendMode(blendMode)
-        }
-        
-        context.clip(to: bounds)
-        context.draw(img, in: ImageRegion.frameForContentMode(self.contentMode,
-                                                              bounds: self.bounds,
-                                                              imageSize: imageSize))
-        context.restoreGState()
-    }
-    
-    internal static func frameForContentMode(_ contentMode: ImageContentMode,
-                                             bounds: CGRect,
-                                             imageSize: CGSize) -> CGRect {
-        switch contentMode {
-        case .scaleToFill:
-            return bounds
-        case .scaleAspectFit:
-            return aspectFitFrame(bounds: bounds, imageSize: imageSize)
-        case .scaleAspectFill:
-            return aspectFillFrame(bounds: bounds, imageSize: imageSize)
-        case .center:
-            return CGRect(x: (bounds.width - imageSize.width) / 2.0,
-                          y: (bounds.height - imageSize.height) / 2.0,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .top:
-            return CGRect(x: (bounds.width - imageSize.width) / 2.0,
-                          y: 0,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .bottom:
-            return CGRect(x: (bounds.width - imageSize.width) / 2.0,
-                          y: bounds.height - imageSize.height,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .left:
-            return CGRect(x: 0,
-                          y: (bounds.height - imageSize.height) / 2.0,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .right:
-            return CGRect(x: bounds.width - imageSize.width,
-                          y: (bounds.height - imageSize.height) / 2.0,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .topLeft:
-            return CGRect(x: 0,
-                          y: 0,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .topRight:
-            return CGRect(x: bounds.width - imageSize.width,
-                          y: 0,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .bottomLeft:
-            return CGRect(x: 0,
-                          y: bounds.height - imageSize.height,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        case .bottomRight:
-            return CGRect(x: bounds.width - imageSize.width,
-                          y: bounds.height - imageSize.height,
-                          width: imageSize.width,
-                          height: imageSize.height)
-        }
-    }
-    
-    internal static func aspectFitFrame(bounds: CGRect, imageSize: CGSize) -> CGRect {
-        assert(bounds.width > 0 && bounds.height > 0, "Cannot create frame with zero width/height!")
-        
-        let horizontalScaleFactor = imageSize.width / bounds.width
-        let verticalScaleFactor = imageSize.height / bounds.height
-        
-        let scaleFactor = max(horizontalScaleFactor, verticalScaleFactor)
-        
-        let width = imageSize.width / scaleFactor
-        let height = imageSize.height / scaleFactor
-        
-        let x = (bounds.width - width) / 2.0
-        let y = (bounds.height - height) / 2.0
 
-        return CGRect(x: x, y: y, width: width, height: height)
-    }
-    
-    internal static func aspectFillFrame(bounds: CGRect, imageSize: CGSize) -> CGRect {
-        let aspect = imageSize.width / imageSize.height
-        
-        if bounds.width / aspect > bounds.height {
-            let height = bounds.width / aspect
-            return CGRect(x: 0,
-                          y: (bounds.height - height) / 2.0,
-                          width: bounds.width,
-                          height: height)
-        }
-        
-        let width = bounds.height * aspect
-        return CGRect(x: (bounds.width - width) / 2.0,
-                      y: 0,
-                      width: width,
-                      height: bounds.height)
-    }
+	/// The content mode of the image. This affects how the image is positioned and scaled within the frame.
+	public var contentMode: ImageContentMode = .center
+
+	/// The image to display in the frame
+	public var image:       PDFImageType?
+
+	/// The blend mode to use when rendering the image
+	public var blendMode:   CGBlendMode?
+
+	/// :nodoc:
+	override public func draw(withContext context: CGContext, inRect rect: CGRect) {
+		guard bounds.width > 0, bounds.height > 0 else {
+			return
+		}
+
+		guard let img = image?.getCGImage() else {
+			return
+		}
+
+		let imageSize = CGSize(width: CGFloat(img.width),
+							   height: CGFloat(img.height))
+
+		guard imageSize.width > 0, imageSize.height > 0 else {
+			return
+		}
+
+		// TODO: Possibly move the clipping to a clipsToBounds property on PDFRegion?
+		context.saveGState()
+
+		// Transform coordinate system so that images are the right way up
+		context.translateBy(x: 0, y: bounds.height)
+		context.scaleBy(x: 1.0, y: -1.0)
+
+		if let blendMode = blendMode {
+			context.setBlendMode(blendMode)
+		}
+
+		context.clip(to: bounds)
+		context.draw(img, in: ImageRegion.frameForContentMode(self.contentMode,
+															  bounds: self.bounds,
+															  imageSize: imageSize))
+		context.restoreGState()
+	}
+
+	internal static func frameForContentMode(_ contentMode: ImageContentMode,
+											 bounds: CGRect,
+											 imageSize: CGSize) -> CGRect {
+		switch contentMode {
+			case .scaleToFill:
+				return bounds
+			case .scaleAspectFit:
+				return aspectFitFrame(bounds: bounds, imageSize: imageSize)
+			case .scaleAspectFill:
+				return aspectFillFrame(bounds: bounds, imageSize: imageSize)
+			case .center:
+				return CGRect(x: (bounds.width - imageSize.width) / 2.0,
+							  y: (bounds.height - imageSize.height) / 2.0,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .top:
+				return CGRect(x: (bounds.width - imageSize.width) / 2.0,
+							  y: 0,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .bottom:
+				return CGRect(x: (bounds.width - imageSize.width) / 2.0,
+							  y: bounds.height - imageSize.height,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .left:
+				return CGRect(x: 0,
+							  y: (bounds.height - imageSize.height) / 2.0,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .right:
+				return CGRect(x: bounds.width - imageSize.width,
+							  y: (bounds.height - imageSize.height) / 2.0,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .topLeft:
+				return CGRect(x: 0,
+							  y: 0,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .topRight:
+				return CGRect(x: bounds.width - imageSize.width,
+							  y: 0,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .bottomLeft:
+				return CGRect(x: 0,
+							  y: bounds.height - imageSize.height,
+							  width: imageSize.width,
+							  height: imageSize.height)
+			case .bottomRight:
+				return CGRect(x: bounds.width - imageSize.width,
+							  y: bounds.height - imageSize.height,
+							  width: imageSize.width,
+							  height: imageSize.height)
+		}
+	}
+
+	internal static func aspectFitFrame(bounds: CGRect, imageSize: CGSize) -> CGRect {
+		assert(bounds.width > 0 && bounds.height > 0, "Cannot create frame with zero width/height!")
+
+		let horizontalScaleFactor = imageSize.width / bounds.width
+		let verticalScaleFactor   = imageSize.height / bounds.height
+
+		let scaleFactor = max(horizontalScaleFactor, verticalScaleFactor)
+
+		let width  = imageSize.width / scaleFactor
+		let height = imageSize.height / scaleFactor
+
+		let x = (bounds.width - width) / 2.0
+		let y = (bounds.height - height) / 2.0
+
+		return CGRect(x: x, y: y, width: width, height: height)
+	}
+
+	internal static func aspectFillFrame(bounds: CGRect, imageSize: CGSize) -> CGRect {
+		let aspect = imageSize.width / imageSize.height
+
+		if bounds.width / aspect > bounds.height {
+			let height = bounds.width / aspect
+			return CGRect(x: 0,
+						  y: (bounds.height - height) / 2.0,
+						  width: bounds.width,
+						  height: height)
+		}
+
+		let width = bounds.height * aspect
+		return CGRect(x: (bounds.width - width) / 2.0,
+					  y: 0,
+					  width: width,
+					  height: bounds.height)
+	}
 }

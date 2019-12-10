@@ -27,319 +27,328 @@ import Cassowary
 
 /// A structure representing an index into a table
 public struct PDFIndexPath {
-    /// The table section
-    public var section: Int
+	/// The table section
+	public var section: Int
 
-    /// The row in the given section
-    public var row: Int
+	/// The row in the given section
+	public var row:     Int
 
-    /// The column in the given row, in the given section
-    public var column: Int
+	/// The column in the given row, in the given section
+	public var column:  Int
 }
 
 protocol TableChapterDelegate {
-
 }
 
 /// A PDF chapter that generates a table
 open class TableChapter: PDFChapter {
 
-    /// The datasource object for the Table Chapter
-    public weak var dataSource: TableChapterDataSource?
+	/// The datasource object for the Table Chapter
+	public weak var dataSource: TableChapterDataSource?
 
-    // MARK: Current page variables
+	// MARK: Current page variables
 
-    private var currentY: CGFloat = 0
-    private var currentPageNum: Int {
-        return pages.count - 1
-    }
+	private var currentY:       CGFloat = 0
+	private var currentPageNum: Int {
+		return pages.count - 1
+	}
 
-    private var footerHeight: CGFloat = 0
+	private var footerHeight: CGFloat = 0
 
-    private var remainingSpace: CGFloat {
-        return currentPage.specifications.size.height
-                - currentY
-                - footerHeight
-                - currentPage.specifications.contentInsets.bottom
-    }
+	private var remainingSpace: CGFloat {
+		return currentPage.specifications.size.height
+			   - currentY
+			   - footerHeight
+			   - currentPage.specifications.contentInsets.bottom
+	}
 
-    private var currentPage: PDFPage {
-        if pages.count == 0 {
-            return newTablePage()
-        }
+	private var currentPage:         PDFPage {
+		if pages.count == 0 {
+			return newTablePage()
+		}
 
-        return pages.last!
-    }
+		return pages.last!
+	}
 
-    /// Default background color for pages. Can be overridden by the delegate method
-    public var pageBackgroundColor: PDFColor?
+	/// Default background color for pages. Can be overridden by the delegate method
+	public var  pageBackgroundColor: PDFColor?
 
-    public var contentWidth: CGFloat {
-        return self.pageSpecifications.size.width - self.pageSpecifications.contentInsets.left - self.pageSpecifications.contentInsets.right
-    }
+	public var contentWidth: CGFloat {
+		return self.pageSpecifications.size.width - self.pageSpecifications.contentInsets.left - self.pageSpecifications.contentInsets.right
+	}
 
-    // MARK: Dynamic Generation
+	// MARK: Dynamic Generation
 
-    open override func generate() {
-        guard dataSource != nil else {
-            return
-        }
+	open override func generate() {
+		guard dataSource != nil else {
+			return
+		}
 
-        let sectionInfo = getSectionInfo()
+		let sectionInfo = getSectionInfo()
 
-        for (offset:section, element:element) in sectionInfo.enumerated() {
-            let (numRows: numRows, numCols: numCols, columnWeights: columnWeights, columnSpacing: columnSpacing) = element
+		for (offset:section, element:element) in sectionInfo.enumerated() {
+			let (numRows: numRows, numCols: numCols, columnWeights: columnWeights, columnSpacing: columnSpacing) = element
 
-            let sectionRows = rows(forSection: section,
-                    numRows: numRows,
-                    numColumns: numCols,
-                    columnWeights: columnWeights,
-                    columnSpacing: columnSpacing)
+			let sectionRows = rows(forSection: section,
+								   numRows: numRows,
+								   numColumns: numCols,
+								   columnWeights: columnWeights,
+								   columnSpacing: columnSpacing)
 
-            renderRows(sectionRows: sectionRows, forSection: section, renderHeader: true)
-        }
-    }
+			renderRows(sectionRows: sectionRows, forSection: section, renderHeader: true)
+		}
+	}
 
-    internal func renderRows(sectionRows: [PDFRegion], forSection section: Int, renderHeader: Bool) {
-        if (renderHeader) {
-            if let header = dataSource!.tableChapter(self, headerRegionForSection: section) {
-                renderSectionHeader(header, forSection: section)
-            } else {
-                let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
-                currentY += sectionInsets.top
-            }
-        }
+	internal func renderRows(sectionRows: [PDFRegion], forSection section: Int, renderHeader: Bool) {
+		if (renderHeader) {
+			if let header = dataSource!.tableChapter(self, headerRegionForSection: section) {
+				renderSectionHeader(header, forSection: section)
+			} else {
+				let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
+				currentY += sectionInsets.top
+			}
+		}
 
-        let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
+		let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
 
-        for (offset:idx, element:row) in sectionRows.enumerated() {
-            // If there is not enough space left for the row, start a new page
-            if remainingSpace < CGFloat(row.height.value)  {
-                newTablePage()
+		for (offset:idx, element:row) in sectionRows.enumerated() {
+			// If there is not enough space left for the row, start a new page
+			if remainingSpace < CGFloat(row.height.value) {
+				newTablePage()
 
-                let remainingRows = Array(sectionRows.dropFirst(idx))
+				let remainingRows = Array(sectionRows.dropFirst(idx))
 
-                // Recursively call, but don't render the header, since we've already done that.
-                renderRows(sectionRows: remainingRows, forSection: section, renderHeader: false)
-                return
-            }
+				// Recursively call, but don't render the header, since we've already done that.
+				renderRows(sectionRows: remainingRows, forSection: section, renderHeader: false)
+				return
+			}
 
-            row.addConstraints(row.left == currentPage.leftInset + sectionInsets.left, row.top == currentY)
-            currentPage.addChild(row)
-            currentY += CGFloat(row.frame.size.height)
-        }
+			row.addConstraints(row.left == currentPage.leftInset + sectionInsets.left, row.top == currentY)
+			currentPage.addChild(row)
+			currentY += CGFloat(row.frame.size.height)
+		}
 
-        if let footer = dataSource!.tableChapter(self, footerRegionForSection: section) {
-            footer.addConstraints(footer.width == currentPage.contentWidth)
-            footer.updateConstraints()
-            let footerHeight = CGFloat(footer.height.value)
+		if let footer = dataSource!.tableChapter(self, footerRegionForSection: section) {
+			footer.addConstraints(footer.width == currentPage.contentWidth)
+			footer.updateConstraints()
+			let footerHeight = CGFloat(footer.height.value)
 
-            if remainingSpace < footerHeight {
-                newTablePage()
-            }
+			if remainingSpace < footerHeight {
+				newTablePage()
+			}
 
-            currentPage.addChild(footer)
+			currentPage.addChild(footer)
 
-            footer.addConstraints(footer.top == currentY,
-                                  footer.left == currentPage.leftInset)
-            currentY += footerHeight
-        }
+			footer.addConstraints(footer.top == currentY,
+								  footer.left == currentPage.leftInset)
+			currentY += footerHeight
+		}
+	}
 
-    }
+	internal func renderSectionHeader(_ header: PDFRegion, forSection section: Int) {
+		let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
+		let sectionWidth  = widthForSection(section)
 
-    internal func renderSectionHeader(_ header: PDFRegion, forSection section: Int) {
-        let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
-        let sectionWidth = widthForSection(section)
+		header.addConstraints(header.width == sectionWidth)
+		header.updateConstraints()
+		let headerHeight = CGFloat(header.height.value)
 
-        header.addConstraints(header.width == sectionWidth)
-        header.updateConstraints()
-        let headerHeight = CGFloat(header.height.value)
+		var isNewPage: Bool = false
+		if remainingSpace < (headerHeight + sectionInsets.top) {
+			isNewPage = true
+			newTablePage()
+		}
 
-        if remainingSpace < (headerHeight + sectionInsets.top) {
-            newTablePage()
-        }
-		
 		currentPage.addChild(header)
-		
-        header.addConstraints(header.left == currentPage.leftInset + sectionInsets.left,
-                header.top == currentY + sectionInsets.top)
-		
-        currentY += headerHeight + sectionInsets.top
-    }
 
-    @discardableResult
-    internal func newTablePage() -> PDFPage {
+		if isNewPage {
+			header.addConstraints(header.left == currentPage.leftInset + sectionInsets.left,
+								  header.top == currentY)
+			currentY += headerHeight
+		} else {
+			header.addConstraints(header.left == currentPage.leftInset + sectionInsets.left,
+								  header.top == currentY + sectionInsets.top)
+			currentY += headerHeight + sectionInsets.top
+		}
+	}
 
-        return withNewPage {
-            if let backgroundRegion = self.dataSource?.tableChapter(self,
-                                                                     backgroundRegionForPage: self.currentPageNum) {
-                $0.addChild(backgroundRegion)
-                backgroundRegion.addConstraints(backgroundRegion.top == $0.topBackgroundInset,
-                                                backgroundRegion.bottom == $0.bottomBackgroundInset,
-                                                backgroundRegion.left == $0.leftBackgroundInset,
-                                                backgroundRegion.right == $0.rightBackgroundInset)
-            }
-            
-            if let color = self.dataSource?.tableChapter(self, backgroundColorForPage: self.currentPageNum) {
-                $0.backgroundColor = color
-            } else if let color = self.pageBackgroundColor {
-                $0.backgroundColor = color
-            }
+	@discardableResult
+	internal func newTablePage() -> PDFPage {
 
-            self.currentY = currentPage.edgeInsets.top
+		return withNewPage {
+			if let backgroundRegion = self.dataSource?.tableChapter(self,
+																	backgroundRegionForPage: self.currentPageNum) {
+				$0.addChild(backgroundRegion)
+				backgroundRegion.addConstraints(backgroundRegion.top == $0.topBackgroundInset,
+												backgroundRegion.bottom == $0.bottomBackgroundInset,
+												backgroundRegion.left == $0.leftBackgroundInset,
+												backgroundRegion.right == $0.rightBackgroundInset)
+			}
 
-            guard let ds = self.dataSource else {
-                return
-            }
+			if let color = self.dataSource?.tableChapter(self, backgroundColorForPage: self.currentPageNum) {
+				$0.backgroundColor = color
+			} else if let color = self.pageBackgroundColor {
+				$0.backgroundColor = color
+			}
 
-            if let pageHeader: PDFRegion = ds.tableChapter(self, headerRegionForPage: currentPageNum) {
-                let headerWidth = currentPage.contentWidth
+			self.currentY = currentPage.edgeInsets.top
 
-                $0.addChild(pageHeader)
-				
-                pageHeader.addConstraints(pageHeader.left == currentPage.leftInset,
-                        pageHeader.top == currentPage.topInset,
-                        pageHeader.width == headerWidth)
+			guard let ds = self.dataSource else {
+				return
+			}
 
-                pageHeader.calculateConstraints()
-                pageHeader.recursivelyUpdateFrames(transform: .zero)
+			if let pageHeader: PDFRegion = ds.tableChapter(self, headerRegionForPage: currentPageNum) {
+				let headerWidth = currentPage.contentWidth
 
-                currentY += CGFloat(pageHeader.height.value)
-            }
+				$0.addChild(pageHeader)
 
-            if let pageFooter: PDFRegion = ds.tableChapter(self, footerRegionForPage: currentPageNum) {
-                let footerWidth = currentPage.contentWidth
+				pageHeader.addConstraints(pageHeader.left == currentPage.leftInset,
+										  pageHeader.top == currentPage.topInset,
+										  pageHeader.width == headerWidth)
 
-                $0.addChild(pageFooter)
+				pageHeader.calculateConstraints()
+				pageHeader.recursivelyUpdateFrames(transform: .zero)
 
-                pageFooter.addConstraints(pageFooter.left == currentPage.leftInset,
-                        pageFooter.bottom == currentPage.bottomInset,
-                        pageFooter.width == footerWidth)
+				currentY += CGFloat(pageHeader.height.value)
+			}
 
-                pageFooter.calculateConstraints()
-                pageFooter.recursivelyUpdateFrames(transform: .zero)
-                footerHeight = CGFloat(pageFooter.height.value)
+			if let pageFooter: PDFRegion = ds.tableChapter(self, footerRegionForPage: currentPageNum) {
+				let footerWidth = currentPage.contentWidth
 
-                pageFooter.addConstraint(pageFooter.height == footerHeight)
-            } else {
-                footerHeight = 0
-            }
-        }
-    }
+				$0.addChild(pageFooter)
 
-    internal func widthForSection(_ section: Int) -> CGFloat {
-        let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
-        return currentPage.specifications.size.width
-                - currentPage.edgeInsets.left
-                - currentPage.edgeInsets.right
-                - sectionInsets.left
-                - sectionInsets.right
-    }
+				pageFooter.addConstraints(pageFooter.left == currentPage.leftInset,
+										  pageFooter.bottom == currentPage.bottomInset,
+										  pageFooter.width == footerWidth)
 
-    internal func getSectionInfo() -> [(numRows: Int, numCols: Int, columnWeights: [Double], columnSpacing: Double)] {
-        let numSections = dataSource!.numberOfSections(in: self)
+				pageFooter.calculateConstraints()
+				pageFooter.recursivelyUpdateFrames(transform: .zero)
+				footerHeight = CGFloat(pageFooter.height.value)
 
-        var sectionInfo: [(numRows: Int, numCols: Int, columnWeights: [Double], columnSpacing: Double)] = []
+				pageFooter.addConstraint(pageFooter.height == footerHeight)
+			} else {
+				footerHeight = 0
+			}
+		}
+	}
 
-        for section in 0..<numSections {
-            let numRows = dataSource!.tableChapter(self, numberOfRowsInSection: Int(section))
-            let numCols = dataSource!.tableChapter(self, numberOfColumnsInSection: Int(section))
-            let columnWeights = dataSource!.tableChapter(self,
-                    columnWidthWeightsForSection: Int(section))
-                    ?? [Double](repeating: 1.0 / Double(numCols), count: numCols)
-            let columnSpacing = dataSource!.tableChapter(self, spacingForColumnsInSection: Int(section))
+	internal func widthForSection(_ section: Int) -> CGFloat {
+		let sectionInsets = dataSource!.tableChapter(self, insetsForSection: section)
+		return currentPage.specifications.size.width
+			   - currentPage.edgeInsets.left
+			   - currentPage.edgeInsets.right
+			   - sectionInsets.left
+			   - sectionInsets.right
+	}
 
-            assert(columnWeights.count == numCols, "Number of width weights provided is not equal to the number of columns!")
+	internal func getSectionInfo() -> [(numRows: Int, numCols: Int, columnWeights: [Double], columnSpacing: Double)] {
+		let numSections = dataSource!.numberOfSections(in: self)
 
-            sectionInfo.append((numRows: numRows,
-                    numCols: numCols,
-                    columnWeights: columnWeights,
-                    columnSpacing: columnSpacing))
-        }
+		var sectionInfo: [(numRows: Int, numCols: Int, columnWeights: [Double], columnSpacing: Double)] = []
 
-        return sectionInfo
-    }
+		for section in 0..<numSections {
+			let numRows       = dataSource!.tableChapter(self, numberOfRowsInSection: Int(section))
+			let numCols       = dataSource!.tableChapter(self, numberOfColumnsInSection: Int(section))
+			let columnWeights = dataSource!.tableChapter(self,
+														 columnWidthWeightsForSection: Int(section))
+								?? [Double](repeating: 1.0 / Double(numCols), count: numCols)
+			let columnSpacing = dataSource!.tableChapter(self, spacingForColumnsInSection: Int(section))
 
-    internal func columns(forRow row: Int, inSection section: Int, numColumns: Int) -> [PDFRegion] {
-        var columns: [PDFRegion] = []
+			assert(columnWeights.count == numCols, "Number of width weights provided is not equal to the number of columns!")
 
-        for column in 0..<numColumns {
-            let newIndex = PDFIndexPath(section: section, row: row, column: column)
-            columns.append(dataSource!.tableChapter(self, regionFor: newIndex))
-        }
+			sectionInfo.append((numRows: numRows,
+								numCols: numCols,
+								columnWeights: columnWeights,
+								columnSpacing: columnSpacing))
+		}
 
-        return columns
-    }
+		return sectionInfo
+	}
 
-    /// Generates a region containing all column regions for a row, and sets up the constraints accordingly
-    internal func regionForRow(columns: [PDFRegion], weights: [Double], spacing: Double, insets: PDFEdgeInsets, rowWidth: Double) -> PDFRegion {
-        let row = PDFRegion(frame: .zero)
-        row.edgeInsets = insets
+	internal func columns(forRow row: Int, inSection section: Int, numColumns: Int) -> [PDFRegion] {
+		var columns: [PDFRegion] = []
 
-        for column in columns {
-            row.addChild(column)
+		for column in 0..<numColumns {
+			let newIndex = PDFIndexPath(section: section, row: row, column: column)
+			columns.append(dataSource!.tableChapter(self, regionFor: newIndex))
+		}
 
-            // Add constraints for the top and bottom
-            column.addConstraints(column.top == row.topInset, column.bottom <= row.bottomInset)
-        }
+		return columns
+	}
 
-        // Constrain the first and last column to the edges of the row
-        let firstCol = columns.first!
-        let lastCol = columns.last!
+	/// Generates a region containing all column regions for a row, and sets up the constraints accordingly
+	internal func regionForRow(columns: [PDFRegion], weights: [Double], spacing: Double, insets: PDFEdgeInsets, rowWidth: Double) -> PDFRegion {
+		let row = PDFRegion(frame: .zero)
+		row.edgeInsets = insets
 
-        firstCol.addConstraints(firstCol.left == row.leftInset)
-        lastCol.addConstraints(lastCol.right == row.rightInset)
+		for column in columns {
+			row.addChild(column)
 
-        // Set up the constraints between the columns
+			// Add constraints for the top and bottom
+			column.addConstraints(column.top == row.topInset, column.bottom <= row.bottomInset)
+		}
 
-        for i in 0..<columns.count {
-            let col = columns[i]
+		// Constrain the first and last column to the edges of the row
+		let firstCol = columns.first!
+		let lastCol  = columns.last!
 
-            // Add width constraint
-            let space = (spacing * Double(columns.count - 1))
-            let columnWidth = ((rowWidth - Double(row.edgeInsets.left - row.edgeInsets.right) - space) * weights[i])
-            col.addConstraints((col.width == columnWidth).setStrength(Strength.STRONG))
+		firstCol.addConstraints(firstCol.left == row.leftInset)
+		lastCol.addConstraints(lastCol.right == row.rightInset)
 
-            if i < 1 {
-                continue
-            }
+		// Set up the constraints between the columns
 
-            let lastCol = columns[i - 1]
-            col.addConstraints(col.left == lastCol.right + spacing)
-        }
+		for i in 0..<columns.count {
+			let col         = columns[i]
 
-        return row
-    }
+			// Add width constraint
+			let space       = (spacing * Double(columns.count - 1))
+			let columnWidth = ((rowWidth - Double(row.edgeInsets.left - row.edgeInsets.right) - space) * weights[i])
+			col.addConstraints((col.width == columnWidth).setStrength(Strength.STRONG))
 
-    internal func rows(forSection section: Int, numRows: Int, numColumns: Int, columnWeights: [Double], columnSpacing: Double) -> [PDFRegion] {
-        var rows: [PDFRegion] = []
+			if i < 1 {
+				continue
+			}
 
-        let sectionWidth = widthForSection(section)
+			let lastCol = columns[i - 1]
+			col.addConstraints(col.left == lastCol.right + spacing)
+		}
 
-        for rowNum in 0..<numRows {
-            let rowColumns = columns(forRow: rowNum, inSection: section, numColumns: numColumns)
-            let rowInsets = dataSource!.tableChapter(self, insetsForRowAtIndexPath: PDFIndexPath(section: section, row: rowNum, column: 0))
-            let row = regionForRow(columns: rowColumns, weights: columnWeights, spacing: columnSpacing, insets: rowInsets, rowWidth: Double(sectionWidth))
+		return row
+	}
 
-            row.addConstraints(row.width == sectionWidth)
+	internal func rows(forSection section: Int, numRows: Int, numColumns: Int, columnWeights: [Double], columnSpacing: Double) -> [PDFRegion] {
+		var rows: [PDFRegion] = []
 
-            // Calculate the constraints for the row and update the frames so that the section
-            // height can be calculated.
-            row.updateConstraints()
+		let sectionWidth = widthForSection(section)
 
-            if let color = dataSource!.tableChapter(self, backgroundColorForRowAtIndexPath: PDFIndexPath(section: section, row: rowNum, column: 0)) {
-                row.backgroundColor = color
-            }
+		for rowNum in 0..<numRows {
+			let rowColumns = columns(forRow: rowNum, inSection: section, numColumns: numColumns)
+			let rowInsets  = dataSource!.tableChapter(self, insetsForRowAtIndexPath: PDFIndexPath(section: section, row: rowNum, column: 0))
+			let row        = regionForRow(columns: rowColumns,
+										  weights: columnWeights,
+										  spacing: columnSpacing,
+										  insets: rowInsets,
+										  rowWidth: Double(sectionWidth))
 
-            rows.append(row)
-        }
+			row.addConstraints(row.width == sectionWidth)
 
-        return rows
-    }
+			// Calculate the constraints for the row and update the frames so that the section
+			// height can be calculated.
+			row.updateConstraints()
 
-    internal func height(forRows rows: [PDFRegion]) -> CGFloat {
-        return rows.reduce(0.0) {
-            return $0 + $1.frame.size.height
-        }
-    }
+			if let color = dataSource!.tableChapter(self, backgroundColorForRowAtIndexPath: PDFIndexPath(section: section, row: rowNum, column: 0)) {
+				row.backgroundColor = color
+			}
+
+			rows.append(row)
+		}
+
+		return rows
+	}
+
+	internal func height(forRows rows: [PDFRegion]) -> CGFloat {
+		return rows.reduce(0.0) {
+			return $0 + $1.frame.size.height
+		}
+	}
 }

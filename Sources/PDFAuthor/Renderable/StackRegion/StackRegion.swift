@@ -28,367 +28,367 @@ import Cassowary
 /// A PDF region that arranges its subregions in a vertical or horizontal stack
 open class StackRegion: PDFRegion {
 
-    /// The layout of arranged regions perpendicular to the stack region's axis
-    public var alignment:       StackRegionAlignment    = .fill
+	/// The layout of arranged regions perpendicular to the stack region's axis
+	public var alignment:       StackRegionAlignment    = .fill
 
-    /// The axis along which the arranged regions are laid out.
-    public var axis:            StackRegionAxis         = .vertical
+	/// The axis along which the arranged regions are laid out.
+	public var axis:            StackRegionAxis         = .vertical
 
-    /// The distribution of the arranged regions along the stack region's axis.
-    public var distribution:    StackRegionDistribution = .fill
+	/// The distribution of the arranged regions along the stack region's axis.
+	public var distribution:    StackRegionDistribution = .fill
 
-    /// The spacing between each laid out region.
-    public var spacing:         CGFloat                 = 0.0
+	/// The spacing between each laid out region.
+	public var spacing:         CGFloat                 = 0.0
 
-    /// The arranged regions of the stack region.
-    public var arrangedRegions: [PDFRegion]             = []
+	/// The arranged regions of the stack region.
+	public var arrangedRegions: [PDFRegion]             = []
 
-    /// :nodoc:
-    public override var constraints: [Constraint] {
-        get {
-            return super.constraints + constraintsForArrangedRegions()
-        }
+	/// :nodoc:
+	public override var constraints: [Constraint] {
+		get {
+			return super.constraints + constraintsForArrangedRegions()
+		}
 
-        set {
-            translatesAutoresizingMaskIntoConstraints = false
-            _constraints = newValue
-        }
-    }
+		set {
+			translatesAutoresizingMaskIntoConstraints = false
+			_constraints = newValue
+		}
+	}
 
-    // MARK: Initializers
-    
-    /// Default initializer
-    public override init() {
-        super.init(frame: .zero)
-    }
-    
-    /// Initialize with a set of arranged regions
-    public init(arrangedRegions: [PDFRegion]) {
-        super.init(frame: .zero)
-        addArrangedRegions(arrangedRegions)
-    }
+	// MARK: Initializers
 
-    // MARK: Managing Arranged Regions
+	/// Default initializer
+	public override init() {
+		super.init(frame: .zero)
+	}
 
-    /// Add a region to the end of the arrangedRegions array.
-    public func addArrangedRegion(_ region: PDFRegion) {
-        arrangedRegions.append(region)
-        addChild(region)
-    }
+	/// Initialize with a set of arranged regions
+	public init(arrangedRegions: [PDFRegion]) {
+		super.init(frame: .zero)
+		addArrangedRegions(arrangedRegions)
+	}
 
-    /// Adds regions to the end of the arrangedRegions array.
-    public func addArrangedRegions(_ regions: [PDFRegion]) {
-        for region in regions {
-            addArrangedRegion(region)
-        }
-    }
+	// MARK: Managing Arranged Regions
 
-    /// Adds regions to the end of the arrangedRegions array.
-    public func addArrangedRegions(_ regions: PDFRegion...) {
-        addArrangedRegions(regions)
-    }
+	/// Add a region to the end of the arrangedRegions array.
+	public func addArrangedRegion(_ region: PDFRegion) {
+		arrangedRegions.append(region)
+		addChild(region)
+	}
 
-    /**
-     Inserts a region into the arrangedRegions array at the given index.
-     - parameters:
-         - region: The region to add.
-         - index: The index at which to add the region.
-     */
-    public func insertArrangedRegion(_ region: PDFRegion, at index: Int) {
-        assert(index >= arrangedRegions.startIndex && index <= arrangedRegions.endIndex, "Index out of bounds!")
-        arrangedRegions.insert(region, at: index)
-    }
+	/// Adds regions to the end of the arrangedRegions array.
+	public func addArrangedRegions(_ regions: [PDFRegion]) {
+		for region in regions {
+			addArrangedRegion(region)
+		}
+	}
 
-    /// Removes a region from the arrangedRegions array.
-    public func removeArrangedRegion(_ region: PDFRegion) {
-        guard let index = arrangedRegions.index(of: region) else {
-            assertionFailure("Region is not in the arrangedRegions array.")
-            return
-        }
+	/// Adds regions to the end of the arrangedRegions array.
+	public func addArrangedRegions(_ regions: PDFRegion...) {
+		addArrangedRegions(regions)
+	}
 
-        arrangedRegions.remove(at: index)
-        region.removeFromParent()
-    }
+	/**
+	 Inserts a region into the arrangedRegions array at the given index.
+	 - parameters:
+		 - region: The region to add.
+		 - index: The index at which to add the region.
+	 */
+	public func insertArrangedRegion(_ region: PDFRegion, at index: Int) {
+		assert(index >= arrangedRegions.startIndex && index <= arrangedRegions.endIndex, "Index out of bounds!")
+		arrangedRegions.insert(region, at: index)
+	}
 
-    // MARK: Constraints
+	/// Removes a region from the arrangedRegions array.
+	public func removeArrangedRegion(_ region: PDFRegion) {
+		guard let index = arrangedRegions.index(of: region) else {
+			assertionFailure("Region is not in the arrangedRegions array.")
+			return
+		}
 
-    internal func constraintsForArrangedRegions() -> [Constraint] {
-        switch axis {
-            case .horizontal:
-                return constraintsForHorizontalAxis()
-            case .vertical:
-                return constraintsForVerticalAxis()
-        }
-    }
+		arrangedRegions.remove(at: index)
+		region.removeFromParent()
+	}
 
-    internal func constraintsForVerticalAxis() -> [Constraint] {
-        let perpendicularConstraints: [Constraint] = perpendicularConstraintsForVerticalAxis(alignment)
+	// MARK: Constraints
 
-        var axisConstraints: [Constraint] = []
+	internal func constraintsForArrangedRegions() -> [Constraint] {
+		switch axis {
+			case .horizontal:
+				return constraintsForHorizontalAxis()
+			case .vertical:
+				return constraintsForVerticalAxis()
+		}
+	}
 
-        let intrinsicContentSizes = arrangedRegions.map { $0.intrinsicContentSize() }
-        let totalHeight = intrinsicContentSizes.map { $0?.height ?? 1.0 }.reduce(0.0) { $0 + $1 }
-        let heightProportions = intrinsicContentSizes.map { $0?.height ?? 0.0 / totalHeight }
+	internal func constraintsForVerticalAxis() -> [Constraint] {
+		let perpendicularConstraints: [Constraint] = perpendicularConstraintsForVerticalAxis(alignment)
 
-        for (index, region) in arrangedRegions.enumerated() {
-            switch distribution {
-                case .fill:
-                    if index == 0 {
-                        axisConstraints.append(region.top == self.topInset)
-                        if(arrangedRegions.count == 1) {
-                            axisConstraints.append(region.bottom == self.bottomInset)
-                        }
-                    } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                        axisConstraints.append(region.bottom == self.bottomInset)
-                    } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                    }
+		var axisConstraints: [Constraint] = []
 
-                case .fillEqually:
-                    if index == 0 {
-                        axisConstraints.append(region.top == self.topInset)
-                        if(arrangedRegions.count == 1) {
-                            axisConstraints.append(region.bottom == self.bottomInset)
-                        }
-                    } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                        axisConstraints.append(region.bottom == self.bottomInset)
-                        axisConstraints.append(region.height == arrangedRegions[index - 1].height)
-                    } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                        axisConstraints.append(region.height == arrangedRegions[index - 1].height)
-                    }
+		let intrinsicContentSizes = arrangedRegions.map { $0.intrinsicContentSize() }
+		let totalHeight = intrinsicContentSizes.map { $0?.height ?? 1.0 }.reduce(0.0) { $0 + $1 }
+		let heightProportions = intrinsicContentSizes.map { $0?.height ?? 0.0 / totalHeight }
 
-                case .fillProportionally:
-                    if index == 0 {
-                        axisConstraints.append(region.top == self.topInset)
-                        if(arrangedRegions.count == 1) {
-                            axisConstraints.append(region.bottom == self.bottomInset)
-                        }
-                    } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                        axisConstraints.append(region.bottom == self.bottomInset)
-                        axisConstraints.append(region.height == self.height * heightProportions[index])
-                    } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                    }
+		for (index, region) in arrangedRegions.enumerated() {
+			switch distribution {
+				case .fill:
+					if index == 0 {
+						axisConstraints.append(region.top == self.topInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.bottom == self.bottomInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.bottom == self.bottomInset)
+					} else {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+					}
 
-                case .equalSpacing:
-                    // TODO: Implement
-                    if index == 0 {
-                        axisConstraints.append(region.top == self.topInset)
-                        if(arrangedRegions.count == 1) {
-                            axisConstraints.append(region.bottom == self.bottomInset)
-                        }
-                    } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                        axisConstraints.append(region.bottom == self.bottomInset)
-                    } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                    }
+				case .fillEqually:
+					if index == 0 {
+						axisConstraints.append(region.top == self.topInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.bottom == self.bottomInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.bottom == self.bottomInset)
+						axisConstraints.append(region.height == arrangedRegions[index - 1].height)
+					} else {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.height == arrangedRegions[index - 1].height)
+					}
 
-                case .equalCentering:
-                    // TODO: Implement
-                    if index == 0 {
-                        axisConstraints.append(region.top == self.topInset)
-                        if(arrangedRegions.count == 1) {
-                            axisConstraints.append(region.bottom == self.bottomInset)
-                        }
-                    } else if index == arrangedRegions.count - 1 {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                        axisConstraints.append(region.bottom == self.bottomInset)
-                    } else {
-                        let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
-                        axisConstraints.append(constraint)
-                    }
-                }
-            }
+				case .fillProportionally:
+					if index == 0 {
+						axisConstraints.append(region.top == self.topInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.bottom == self.bottomInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.bottom == self.bottomInset)
+						axisConstraints.append(region.height == self.height * heightProportions[index])
+					} else {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+					}
 
-            return perpendicularConstraints + axisConstraints
-        }
+				case .equalSpacing:
+					// TODO: Implement
+					if index == 0 {
+						axisConstraints.append(region.top == self.topInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.bottom == self.bottomInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.bottom == self.bottomInset)
+					} else {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+					}
 
-        internal func perpendicularConstraintsForVerticalAxis(_ alignment: StackRegionAlignment) -> [Constraint] {
-            var constraints: [Constraint] = []
+				case .equalCentering:
+					// TODO: Implement
+					if index == 0 {
+						axisConstraints.append(region.top == self.topInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.bottom == self.bottomInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.bottom == self.bottomInset)
+					} else {
+						let constraint = region.top == arrangedRegions[index - 1].bottom + spacing
+						axisConstraints.append(constraint)
+					}
+			}
+		}
 
-            for region in arrangedRegions {
-                switch alignment {
-                    case .fill:
-                        constraints += [
-                            region.left == self.leftInset,
-                            region.right == self.rightInset
-                        ]
-                    case .leading:
-                        constraints += [
-                            region.leading == self.leading,
-                            self.width >= region.width
-                        ]
-                    case .center:
-                        constraints += [
-                            region.centerX == self.centerX,
-                            self.width >= region.width
-                        ]
+		return perpendicularConstraints + axisConstraints
+	}
 
-                    default:
-                        // If the alignment doesn't make sense for this axis, just return .fill constraints instead.
-                        print("Alignment \(alignment) doesn't make sense for Vertical axis! Using .fill instead.")
-                        constraints += perpendicularConstraintsForVerticalAxis(.fill)
-                }
-            }
+	internal func perpendicularConstraintsForVerticalAxis(_ alignment: StackRegionAlignment) -> [Constraint] {
+		var constraints: [Constraint] = []
 
-            return constraints
-        }
+		for region in arrangedRegions {
+			switch alignment {
+				case .fill:
+					constraints += [
+						region.left == self.leftInset,
+						region.right == self.rightInset
+					]
+				case .leading:
+					constraints += [
+						region.leading == self.leading,
+						self.width >= region.width
+					]
+				case .center:
+					constraints += [
+						region.centerX == self.centerX,
+						self.width >= region.width
+					]
 
-        internal func constraintsForHorizontalAxis() -> [Constraint] {
-            let perpendicularConstraints: [Constraint] = perpendicularConstraintsForHorizontalAxis(alignment)
+				default:
+					// If the alignment doesn't make sense for this axis, just return .fill constraints instead.
+					print("Alignment \(alignment) doesn't make sense for Vertical axis! Using .fill instead.")
+					constraints += perpendicularConstraintsForVerticalAxis(.fill)
+			}
+		}
 
-            var axisConstraints: [Constraint] = []
+		return constraints
+	}
 
-            let intrinsicContentSizes = arrangedRegions.map { $0.intrinsicContentSize() }
-            let totalWidth = intrinsicContentSizes.map { $0?.width ?? 1.0 }.reduce(0.0) { $0 + $1 }
-            let widthProportions = intrinsicContentSizes.map { $0?.width ?? 0.0 / totalWidth }
+	internal func constraintsForHorizontalAxis() -> [Constraint] {
+		let perpendicularConstraints: [Constraint] = perpendicularConstraintsForHorizontalAxis(alignment)
 
-            for (index, region) in arrangedRegions.enumerated() {
-                switch distribution {
-                    case .fill:
-                        if index == 0 {
-                            axisConstraints.append(region.left == self.leftInset)
-                            if(arrangedRegions.count == 1) {
-                                axisConstraints.append(region.right == self.rightInset)
-                            }
-                        } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                            axisConstraints.append(region.right == self.rightInset)
-                        } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                        }
+		var axisConstraints: [Constraint] = []
 
-                    case .fillEqually:
-                        if index == 0 {
-                            axisConstraints.append(region.left == self.leftInset)
-                            axisConstraints.append(region.width == self.width / arrangedRegions.count)
-                            if(arrangedRegions.count == 1) {
-                                axisConstraints.append(region.right == self.rightInset)
-                            }
-                        } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                            axisConstraints.append(region.right == self.rightInset)
-                            axisConstraints.append(region.width == self.width / arrangedRegions.count)
-                        } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                            axisConstraints.append(region.width == self.width / arrangedRegions.count)
-                        }
+		let intrinsicContentSizes = arrangedRegions.map { $0.intrinsicContentSize() }
+		let totalWidth = intrinsicContentSizes.map { $0?.width ?? 1.0 }.reduce(0.0) { $0 + $1 }
+		let widthProportions = intrinsicContentSizes.map { $0?.width ?? 0.0 / totalWidth }
 
-                    case .fillProportionally:
-                        if index == 0 {
-                            axisConstraints.append(region.left == self.leftInset)
-                            if(arrangedRegions.count == 1) {
-                                axisConstraints.append(region.right == self.rightInset)
-                            }
-                        } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.right == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                            axisConstraints.append(region.right == self.rightInset)
-                            axisConstraints.append(region.width == self.width * widthProportions[index])
-                        } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                        }
+		for (index, region) in arrangedRegions.enumerated() {
+			switch distribution {
+				case .fill:
+					if index == 0 {
+						axisConstraints.append(region.left == self.leftInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.right == self.rightInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.right == self.rightInset)
+					} else {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+					}
 
-                    case .equalSpacing:
-                        // TODO: Implement
-                        if index == 0 {
-                            axisConstraints.append(region.left == self.leftInset)
-                            if(arrangedRegions.count == 1) {
-                                axisConstraints.append(region.right == self.rightInset)
-                            }
-                        } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                            axisConstraints.append(region.right == self.rightInset)
-                        } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                        }
+				case .fillEqually:
+					if index == 0 {
+						axisConstraints.append(region.left == self.leftInset)
+						axisConstraints.append(region.width == self.width / arrangedRegions.count)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.right == self.rightInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.right == self.rightInset)
+						axisConstraints.append(region.width == self.width / arrangedRegions.count)
+					} else {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.width == self.width / arrangedRegions.count)
+					}
 
-                    case .equalCentering:
-                        // TODO: Implement
-                        if index == 0 {
-                            axisConstraints.append(region.left == self.leftInset)
-                            if(arrangedRegions.count == 1) {
-                                axisConstraints.append(region.right == self.rightInset)
-                            }
-                        } else if index == arrangedRegions.count - 1 {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                            axisConstraints.append(region.right == self.rightInset)
-                        } else {
-                            let constraint = region.left == arrangedRegions[index - 1].right + spacing
-                            axisConstraints.append(constraint)
-                        }
-                }
-            }
-            
-            return perpendicularConstraints + axisConstraints
-        }
+				case .fillProportionally:
+					if index == 0 {
+						axisConstraints.append(region.left == self.leftInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.right == self.rightInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.right == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.right == self.rightInset)
+						axisConstraints.append(region.width == self.width * widthProportions[index])
+					} else {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+					}
 
-    internal func perpendicularConstraintsForHorizontalAxis(_ alignment: StackRegionAlignment) -> [Constraint] {
-        var constraints: [Constraint] = []
+				case .equalSpacing:
+					// TODO: Implement
+					if index == 0 {
+						axisConstraints.append(region.left == self.leftInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.right == self.rightInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.right == self.rightInset)
+					} else {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+					}
 
-        for region in arrangedRegions {
-            switch alignment {
-                case .fill:
-                    constraints += [
-                        region.top == self.topInset,
-                        region.bottom == self.bottomInset
-                    ]
-                case .top:
-                    constraints += [
-                        region.top == self.topInset,
-                        self.height >= region.height
-                    ]
-                case .firstBaseline:
-                    // TODO: Implement firstBaseline, then update
-                    constraints += [
-                        region.top == self.topInset,
-                        self.height >= region.height
-                    ]
-                case .center:
-                    constraints += [
-                        region.centerY == self.centerY,
-                        self.height >= region.height + self.edgeInsetTop + self.edgeInsetBottom
-                    ]
-                case .bottom:
-                    constraints += [
-                        region.bottom == self.bottomInset,
-                        self.height >= region.height
-                    ]
-                case .lastBaseline:
-                    constraints += [
-                        region.bottom == self.bottomInset,
-                        self.height >= region.height
-                    ]
+				case .equalCentering:
+					// TODO: Implement
+					if index == 0 {
+						axisConstraints.append(region.left == self.leftInset)
+						if (arrangedRegions.count == 1) {
+							axisConstraints.append(region.right == self.rightInset)
+						}
+					} else if index == arrangedRegions.count - 1 {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+						axisConstraints.append(region.right == self.rightInset)
+					} else {
+						let constraint = region.left == arrangedRegions[index - 1].right + spacing
+						axisConstraints.append(constraint)
+					}
+			}
+		}
 
-                default:
-                    // If the alignment doesn't make sense for this axis, just return .fill constraints instead.
-                    print("Alignment \(alignment) doesn't make sense for Horizontal axis! Using .fill instead.")
-                    constraints += perpendicularConstraintsForVerticalAxis(.fill)
-            }
-        }
+		return perpendicularConstraints + axisConstraints
+	}
 
-        return constraints
-    }
-    }
+	internal func perpendicularConstraintsForHorizontalAxis(_ alignment: StackRegionAlignment) -> [Constraint] {
+		var constraints: [Constraint] = []
+
+		for region in arrangedRegions {
+			switch alignment {
+				case .fill:
+					constraints += [
+						region.top == self.topInset,
+						region.bottom == self.bottomInset
+					]
+				case .top:
+					constraints += [
+						region.top == self.topInset,
+						self.height >= region.height
+					]
+				case .firstBaseline:
+					// TODO: Implement firstBaseline, then update
+					constraints += [
+						region.top == self.topInset,
+						self.height >= region.height
+					]
+				case .center:
+					constraints += [
+						region.centerY == self.centerY,
+						self.height >= region.height + self.edgeInsetTop + self.edgeInsetBottom
+					]
+				case .bottom:
+					constraints += [
+						region.bottom == self.bottomInset,
+						self.height >= region.height
+					]
+				case .lastBaseline:
+					constraints += [
+						region.bottom == self.bottomInset,
+						self.height >= region.height
+					]
+
+				default:
+					// If the alignment doesn't make sense for this axis, just return .fill constraints instead.
+					print("Alignment \(alignment) doesn't make sense for Horizontal axis! Using .fill instead.")
+					constraints += perpendicularConstraintsForVerticalAxis(.fill)
+			}
+		}
+
+		return constraints
+	}
+}

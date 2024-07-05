@@ -110,7 +110,7 @@ public final class ImageRegion: PDFRegion {
 	public var blendMode:   CGBlendMode?
 
 	/// :nodoc:
-	override public func draw(withContext context: CGContext, inRect rect: CGRect) {
+	override open func draw(withContext context: CGContext, inRect rect: CGRect) {
 		guard bounds.width > 0, bounds.height > 0 else {
 			return
 		}

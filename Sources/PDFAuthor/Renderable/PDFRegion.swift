@@ -24,6 +24,7 @@
 
 import Foundation
 import Cassowary
+import CoreGraphics
 
 /// The base class representing a rectangular region in the PDF Document.
 open class PDFRegion {

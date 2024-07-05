@@ -128,7 +128,7 @@ public class StringRegion: PDFRegion {
 	// MARK: Drawing
 
 	/// :nodoc:
-	public override func draw(withContext context: CGContext, inRect rect: CGRect) {
+	override open func draw(withContext context: CGContext, inRect rect: CGRect) {
 		guard let str = attributedString else {
 			return
 		}
